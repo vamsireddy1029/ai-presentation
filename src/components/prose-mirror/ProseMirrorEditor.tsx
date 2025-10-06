@@ -8,7 +8,8 @@ import {
 } from "prosemirror-markdown";
 import { EditorState } from "prosemirror-state";
 import { EditorView } from "prosemirror-view";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import FloatingToolbar from "./FloatingToolbar";
 import mySchema from "./ProseMirrorSchema";
 
@@ -141,7 +142,7 @@ const ProseMirrorEditor: React.FC<ProseMirrorEditorProps> = ({
         }
       },
       handleDOMEvents: {
-        blur: (view, event) => {
+        blur: (_view, event) => {
           // Check if the related target (where focus is going) is part of our toolbar
           const relatedTarget = event.relatedTarget as HTMLElement;
           if (

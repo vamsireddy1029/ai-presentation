@@ -1,7 +1,7 @@
 "use server";
 
 import { convertPlateJSToPPTX } from "@/components/presentation/utils/exportToPPT";
-import { PlateSlide } from "@/components/presentation/utils/parser";
+import { type PlateSlide } from "@/components/presentation/utils/parser";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 

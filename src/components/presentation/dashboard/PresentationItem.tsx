@@ -49,7 +49,6 @@ interface PresentationItemProps {
       theme: string;
     } | null;
   };
-  isFavorited?: boolean;
   isSelecting?: boolean;
   onSelect?: (id: string) => void;
   isSelected?: boolean;
@@ -58,7 +57,6 @@ interface PresentationItemProps {
 
 export function PresentationItem({
   presentation,
-  isFavorited = false,
   isSelecting = false,
   onSelect,
   isSelected = false,

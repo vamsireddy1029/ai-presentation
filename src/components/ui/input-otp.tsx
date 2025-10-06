@@ -36,7 +36,7 @@ const InputOTPSlot = React.forwardRef<
 >(({ index, className, ...props }, ref) => {
   const inputOTPContext = React.useContext(OTPInputContext);
   const newLocal = inputOTPContext.slots[index];
-  if (!newLocal) return <></>;
+  if (!newLocal) return null;
   const { char, hasFakeCaret, isActive } = newLocal;
 
   return (

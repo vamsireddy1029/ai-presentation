@@ -1,5 +1,6 @@
 import { SessionProvider } from "next-auth/react";
-import React, { type ReactElement } from "react";
+import type React from "react";
+import { type ReactElement } from "react";
 
 interface Props {
   children: React.ReactNode;

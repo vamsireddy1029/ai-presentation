@@ -3,7 +3,7 @@
 import { Moon, Sun } from "lucide-react";
 import {
   ThemeProvider as NextThemesProvider,
-  ThemeProviderProps,
+  type ThemeProviderProps,
   useTheme,
 } from "next-themes";
 

@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import AllweoneText from "@/components/globals/allweone-logo";
 import { Button } from "@/components/ui/button";
 import * as motion from "framer-motion/client";
-import { useSession } from "next-auth/react";
 import { ExportButton } from "./buttons/ExportButton";
 import { PresentButton } from "./buttons/PresentButton";
 import { SaveStatus } from "./buttons/SaveStatus";
@@ -32,10 +31,7 @@ export default function PresentationHeader({ title }: PresentationHeaderProps) {
   const [presentationTitle, setPresentationTitle] =
     useState<string>("Presentation");
   const pathname = usePathname();
-  const { data: session } = useSession();
   // Check if we're on the generate/outline page
-  const user = session?.user;
-  const isAdmin = user?.role === "ADMIN";
   const isPresentationPage =
     pathname.startsWith("/presentation/") && !pathname.includes("generate");
 

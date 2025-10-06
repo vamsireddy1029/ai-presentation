@@ -11,7 +11,7 @@ import { type NodeType } from "prosemirror-model";
 import { liftListItem, wrapInList } from "prosemirror-schema-list";
 import { type Command } from "prosemirror-state";
 import { type EditorView } from "prosemirror-view";
-import React from "react";
+import type React from "react";
 
 interface FloatingToolbarProps {
   view: EditorView;
@@ -62,7 +62,7 @@ const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
     return null;
   }
 
-  const execCommand = function (cmd: Command): void {
+  const execCommand = (cmd: Command): void => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     cmd(view.state, view.dispatch, view);
     view.focus();

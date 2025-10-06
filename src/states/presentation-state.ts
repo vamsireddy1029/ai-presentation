@@ -1,5 +1,5 @@
-import { ImageModelList } from "@/app/_actions/image/generate";
-import { PlateSlide } from "@/components/presentation/utils/parser";
+import { type ImageModelList } from "@/app/_actions/image/generate";
+import { type PlateSlide } from "@/components/presentation/utils/parser";
 import { type ThemeProperties, type Themes } from "@/lib/presentation/themes";
 import { type TElement } from "platejs";
 import { create } from "zustand";

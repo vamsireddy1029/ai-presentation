@@ -6,7 +6,7 @@ import {
   type PlateSlide,
   type RootImage,
 } from "@/components/presentation/utils/parser";
-import { ImageCropSettings } from "@/components/presentation/utils/types";
+import { type ImageCropSettings } from "@/components/presentation/utils/types";
 import { useDebouncedSave } from "@/hooks/presentation/useDebouncedSave";
 import { usePresentationState } from "@/states/presentation-state";
 import { DndPlugin, type DragItemNode } from "@platejs/dnd";

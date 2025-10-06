@@ -1,6 +1,6 @@
 import { PresentationGenerationManager } from "@/components/presentation/dashboard/PresentationGenerationManager";
 import PresentationHeader from "@/components/presentation/presentation-page/PresentationHeader";
-import React from "react";
+import type React from "react";
 
 export default function PresentationLayout({
   children,

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { usePresentationSlides } from "@/hooks/presentation/usePresentationSlides";
 import { usePresentationState } from "@/states/presentation-state";
 import PresentationEditorStaticView from "../editor/presentation-editor-static";
-import { PlateSlide } from "../utils/parser";
+import { type PlateSlide } from "../utils/parser";
 import { SlidePreviewCard } from "./SlidePreviewCard";
 
 interface SlidePreviewProps {

@@ -2,7 +2,7 @@ import NextAuthProvider from "@/provider/NextAuthProvider";
 import TanStackQueryProvider from "@/provider/TanstackProvider";
 import { ThemeProvider } from "@/provider/theme-provider";
 import "@/styles/globals.css";
-import type { Metadata } from "next";
+import { type Metadata } from "next";
 import { Inter } from "next/font/google";
 
 // If loading a variable font, you don't need to specify the font weight

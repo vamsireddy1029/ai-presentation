@@ -1,4 +1,5 @@
 /* Presentation Theme Styles */
+/** biome-ignore-all lint/complexity/noImportantStyles: It is necessary for the presentation to work */
 
 /* CSS Variables for theming */
 :root {
