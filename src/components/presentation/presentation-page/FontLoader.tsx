@@ -1,13 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { FontPicker } from "@/components/ui/font-picker";
 import { type ThemeProperties } from "@/lib/presentation/themes";
-
-// Using dynamic import since FontPicker uses browser APIs
-const DynamicFontPicker = dynamic(
-  () => import("react-fontpicker-ts").then((mod) => mod.default),
-  { ssr: false },
-);
 
 // Component to load fonts for custom themes
 export function CustomThemeFontLoader({
@@ -19,7 +13,12 @@ export function CustomThemeFontLoader({
 
   return (
     <div style={{ display: "none" }}>
-      <DynamicFontPicker defaultValue={fonts[0]} loadFonts={fonts} loaderOnly />
+      <FontPicker
+        defaultValue={fonts[0]}
+        loadFonts={fonts}
+        loaderOnly
+        autoLoad
+      />
     </div>
   );
 }

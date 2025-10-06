@@ -1,21 +1,29 @@
 "use server";
 
-import { type PlateSlide } from "@/components/presentation/utils/parser";
+import { PlateSlide } from "@/components/presentation/utils/parser";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { type InputJsonValue } from "@prisma/client/runtime/library";
 
-export async function createPresentation(
+export async function createPresentation({
+  content,
+  title,
+  theme = "default",
+  outline,
+  imageSource,
+  presentationStyle,
+  language,
+}: {
   content: {
     slides: PlateSlide[];
-  },
-  title: string,
-  theme = "default",
-  outline?: string[],
-  imageModel?: string,
-  presentationStyle?: string,
-  language?: string
-) {
+  };
+  title: string;
+  theme?: string;
+  outline?: string[];
+  imageSource?: string;
+  presentationStyle?: string;
+  language?: string;
+}) {
   const session = await auth();
   if (!session?.user) {
     throw new Error("Unauthorized");
@@ -33,7 +41,7 @@ export async function createPresentation(
           create: {
             content: content as unknown as InputJsonValue,
             theme: theme,
-            imageModel,
+            imageSource,
             presentationStyle,
             language,
             outline: outline,
@@ -61,33 +69,46 @@ export async function createPresentation(
 
 export async function createEmptyPresentation(
   title: string,
-  theme = "default"
+  theme = "default",
+  language = "en-US"
 ) {
   const emptyContent: { slides: PlateSlide[] } = { slides: [] };
 
-  return createPresentation(emptyContent, title, theme);
+  return createPresentation({
+    content: emptyContent,
+    title,
+    theme,
+    language,
+  });
 }
 
 export async function updatePresentation({
   id,
   content,
+  prompt,
   title,
   theme,
   outline,
-  imageModel,
+  searchResults,
+  imageSource,
   presentationStyle,
   language,
+  thumbnailUrl,
 }: {
   id: string;
   content?: {
     slides: PlateSlide[];
+    config: Record<string, unknown>;
   };
   title?: string;
   theme?: string;
+  prompt?: string;
   outline?: string[];
-  imageModel?: string;
+  searchResults?: Array<{ query: string; results: unknown[] }>;
+  imageSource?: string;
   presentationStyle?: string;
   language?: string;
+  thumbnailUrl?: string;
 }) {
   const session = await auth();
   if (!session?.user) {
@@ -97,7 +118,7 @@ export async function updatePresentation({
   try {
     // Extract values from content if provided there
     const effectiveTheme = theme;
-    const effectiveImageModel = imageModel;
+    const effectiveImageSource = imageSource;
     const effectivePresentationStyle = presentationStyle;
     const effectiveLanguage = language;
 
@@ -106,14 +127,17 @@ export async function updatePresentation({
       where: { id },
       data: {
         title: title,
+        thumbnailUrl,
         presentation: {
           update: {
+            prompt: prompt,
             content: content as unknown as InputJsonValue,
             theme: effectiveTheme,
-            imageModel: effectiveImageModel,
+            imageSource: effectiveImageSource,
             presentationStyle: effectivePresentationStyle,
             language: effectiveLanguage,
             outline,
+            searchResults: searchResults as unknown as InputJsonValue,
           },
         },
       },

@@ -1,121 +1,15 @@
-import { findPath, type PlateEditor } from "@udecode/plate/react";
-import type { DropTargetMonitor } from "react-dnd";
+import { type PlateEditor } from "platejs/react";
+import { type DropTargetMonitor } from "react-dnd";
 
-import {
-  moveNodes,
-  insertNodes,
-  type TNodeEntry,
-  type TElement,
-} from "@udecode/plate";
-import type { UseDropNodeOptions } from "../hooks";
-import type { DragItemNode, ElementDragItemNode } from "@udecode/plate-dnd";
-import { Path } from "slate";
-import { getHoverDirection } from "../utils";
-import { insertColumnGroup } from "@udecode/plate-layout";
+import { insertColumnGroup } from "@platejs/layout";
+import { type TElement } from "platejs";
 
-/** Callback called on drag and drop a node with id. */
-export const getDropPath = (
-  editor: PlateEditor,
-  {
-    canDropNode,
-    dragItem,
-    element,
-    monitor,
-    nodeRef,
-  }: {
-    dragItem: DragItemNode;
-    monitor: DropTargetMonitor;
-  } & Pick<
-    UseDropNodeOptions,
-    "canDropNode" | "element" | "nodeRef" | "orientation"
-  >,
-) => {
-  const direction = getHoverDirection({
-    dragItem,
-    element,
-    monitor,
-    nodeRef,
-  });
+import { type ElementDragItemNode } from "@platejs/dnd";
+import { type UseDropNodeOptions } from "../hooks";
 
-  if (!direction) return;
-
-  let dragEntry: TNodeEntry<TElement> | undefined;
-  let dropEntry: TNodeEntry<TElement> | undefined;
-
-  if ("element" in dragItem) {
-    const dragPath = findPath(editor, dragItem.element as TElement);
-    const hoveredPath = findPath(editor, element);
-
-    if (!hoveredPath) return;
-
-    // If dragPath is found, we're moving an existing node
-    // If not, we're inserting a new node (e.g., from root image)
-    if (dragPath) {
-      dragEntry = [dragItem.element as TElement, dragPath];
-    }
-
-    dropEntry = [element, hoveredPath];
-  } else {
-    return;
-  }
-
-  if (!dropEntry) return;
-
-  // Only check canDropNode if we have a dragEntry (for existing nodes)
-  if (
-    canDropNode &&
-    dragEntry &&
-    !canDropNode({ dragEntry, dragItem, dropEntry, editor })
-  ) {
-    return;
-  }
-
-  let dropPath: Path | undefined;
-
-  // if drag from file system use [] as default path
-  const dragPath = dragEntry?.[1];
-  const hoveredPath = dropEntry[1];
-
-  // For left/right direction, we'll return early since we'll handle it differently
-  if (direction === "left" || direction === "right") {
-    // Include isExternalNode flag if dragPath is not available
-    return { direction, dragPath, hoveredPath, isExternalNode: !dragPath };
-  }
-
-  // Handle top/bottom drops
-  if (dragPath && direction === "bottom") {
-    // Insert after hovered node
-    dropPath = hoveredPath;
-
-    // If the dragged node is already right after hovered node, no change
-    if (Path.equals(dragPath, Path.next(dropPath))) return;
-  } else if (direction === "bottom") {
-    // For external nodes (no dragPath)
-    dropPath = hoveredPath;
-  }
-
-  if (dragPath && direction === "top") {
-    // Insert before hovered node
-    dropPath = [...hoveredPath.slice(0, -1), hoveredPath.at(-1)! - 1];
-
-    // If the dragged node is already right before hovered node, no change
-    if (Path.equals(dragPath, dropPath)) return;
-  } else if (direction === "top") {
-    // For external nodes (no dragPath)
-    dropPath = [...hoveredPath.slice(0, -1), hoveredPath.at(-1)! - 1];
-  }
-
-  if (!dropPath) return;
-
-  const before =
-    dragPath &&
-    Path.isBefore(dragPath, dropPath) &&
-    Path.isSibling(dragPath, dropPath);
-  const to = before ? dropPath : Path.next(dropPath);
-
-  // Include isExternalNode flag if dragPath is not available
-  return { direction, dragPath, to, isExternalNode: !dragPath };
-};
+import { MultiDndPlugin } from "@/components/plate/plugins/dnd-kit";
+import { getDropPath } from "../utils/getDropPath";
+import { updateSiblingsAfterDrop } from "../utils/updateSiblingsForcefully";
 
 export const onDropNode = (
   editor: PlateEditor,
@@ -130,6 +24,7 @@ export const onDropNode = (
     monitor: DropTargetMonitor;
   } & Pick<UseDropNodeOptions, "canDropNode" | "element" | "nodeRef">,
 ) => {
+  const { orientation } = editor.getOptions(MultiDndPlugin);
   const result = getDropPath(editor, {
     canDropNode,
     dragItem,
@@ -140,56 +35,115 @@ export const onDropNode = (
 
   if (!result) return;
 
-  const { direction, dragPath, to, hoveredPath, isExternalNode } = result;
+  if (orientation) {
+    const result = getDropPath(editor, {
+      canDropNode,
+      dragItem,
+      element,
+      monitor,
+      nodeRef,
+    });
 
-  // External node (like root image)
-  if (
-    isExternalNode &&
-    dragItem.element &&
-    typeof dragItem.element === "object"
-  ) {
-    if (direction === "left" || direction === "right") {
-      if (!hoveredPath) return;
+    if (!result) return;
 
-      // Create a column group with empty columns
-      insertColumnGroup(editor, {
-        columns: 2,
-        at: hoveredPath,
+    const { dragPath, to } = result;
+
+    if (!to) return;
+    // Check if we're dragging multiple nodes
+    const draggedIds = Array.isArray(dragItem.id) ? dragItem.id : [dragItem.id];
+
+    if (draggedIds.length > 1) {
+      // Handle multi-node drop - get elements by their IDs and sort them
+      const elements: TElement[] = [];
+
+      draggedIds.forEach((id) => {
+        const entry = editor.api.node<TElement>({ id, at: [] });
+        if (entry) {
+          elements.push(entry[0]);
+        }
       });
 
-      // Get the paths of the two column items that were just created
-      const columnGroupPath = hoveredPath;
-      const firstColumnPath = [...columnGroupPath, 0];
-      const secondColumnPath = [...columnGroupPath, 1];
+      editor.tf.withoutNormalizing(() => {
+        editor.tf.moveNodes({
+          at: [],
+          to,
+          match: (n) => elements.some((element) => element.id === n.id),
+        });
 
-      // Move the target element into the first column
-      moveNodes(editor, {
-        at: Path.next(hoveredPath), // Use next because insertColumnGroup pushes the target down
-        to: [...firstColumnPath, 0],
+        // Update siblings for dropped elements that require it
+        elements.forEach((element) => {
+          if (element?.type) {
+            updateSiblingsAfterDrop(editor, element, to);
+          }
+        });
       });
+    } else {
+      // Single node drop
+      editor.tf.withoutNormalizing(() => {
+        editor.tf.moveNodes({
+          at: dragPath,
+          to,
+        });
 
-      // Insert the dragged element into the second column
-      insertNodes(editor, dragItem.element as TElement, {
-        at: [...secondColumnPath, 0],
+        // Update siblings for dropped element that requires it
+        const droppedElement = editor.api.node<TElement>({ at: to });
+        if (droppedElement?.[0]?.type) {
+          updateSiblingsAfterDrop(editor, droppedElement[0], to);
+        }
       });
-
-      return;
     }
 
-    // Handle top/bottom drops for external nodes
-    if (to) {
-      insertNodes(editor, dragItem.element as TElement, {
-        at: to,
-      });
-      return;
-    }
+    return;
   }
 
-  // Handle left/right drops by creating columns (for existing nodes)
-  if (direction === "left" || direction === "right") {
-    if (!dragPath || !hoveredPath) return;
+  const { direction, dragPath, to, hoveredPath, isExternalNode } = result;
+  // Check if we're dragging multiple nodes
+  const draggedIds = Array.isArray(dragItem.id) ? dragItem.id : [dragItem.id];
 
-    // Create a column group with empty columns
+  // Handle horizontal drops (create columns)
+  if (direction === "left" || direction === "right") {
+    if (!hoveredPath) return;
+
+    // Check if we should create columns or just move elements
+    // Only create columns if:
+    // 1. The hovered element is at root level (path length is 1), OR
+    // 2. It's an external node, OR
+    // 3. We're dragging multiple elements
+    const shouldCreateColumns =
+      hoveredPath.length === 1 || isExternalNode || draggedIds.length > 1;
+
+    if (!shouldCreateColumns) {
+      // Don't create columns - just move the element to the target position
+      if (!to) return;
+
+      const draggedElementIds = new Set(draggedIds);
+
+      editor.tf.withoutNormalizing(() => {
+        editor.tf.moveNodes({
+          at: [],
+          to,
+          match: (n) => draggedElementIds.has(n.id as string),
+        });
+      });
+
+      // Update siblings for dropped elements that require it
+      draggedElementIds.forEach((id) => {
+        const entry = editor.api.node<TElement>({ id, at: [] });
+        console.log("Entry:", entry);
+        if (entry?.[0].type) {
+          updateSiblingsAfterDrop(editor, entry[0], to);
+        }
+      });
+      return;
+    }
+
+    // Store the target element ID before any modifications
+    const targetElementId = element.id as string;
+
+    // Collect all dragged element IDs for matching
+    const draggedElementIds = new Set(draggedIds);
+
+    // Create a column group with 2 columns at the hovered position
     insertColumnGroup(editor, {
       columns: 2,
       at: hoveredPath,
@@ -200,27 +154,114 @@ export const onDropNode = (
     const firstColumnPath = [...columnGroupPath, 0];
     const secondColumnPath = [...columnGroupPath, 1];
 
-    // Move the target element into the first column
-    moveNodes(editor, {
-      at: Path.next(hoveredPath), // Use next because insertColumnGroup pushes the target down
-      to: [...firstColumnPath, 0],
-    });
+    // Determine which column gets which content based on direction
+    const targetColumnPath =
+      direction === "left" ? secondColumnPath : firstColumnPath;
+    const draggedColumnPath =
+      direction === "left" ? firstColumnPath : secondColumnPath;
 
-    // Move the dragged element into the second column
-    moveNodes(editor, {
-      at: dragPath,
-      to: [...secondColumnPath, 0],
+    // Use a transaction to ensure all operations complete
+    editor.transforms.withoutNormalizing(() => {
+      // First, move the target element into its column
+      // The target element is now at the next path because insertColumnGroup pushed it down
+      editor.tf.moveNodes({
+        at: [],
+        to: [...targetColumnPath, 0],
+        match: (n) => n.id === targetElementId,
+      });
+
+      if (
+        isExternalNode &&
+        dragItem.element &&
+        typeof dragItem.element === "object"
+      ) {
+        // Handle external node insertion
+        if (Array.isArray(dragItem.element)) {
+          // Multiple external elements
+          dragItem.element.forEach((elem, index) => {
+            editor.tf.insertNodes(elem, {
+              at: [...draggedColumnPath, index],
+            });
+          });
+        } else {
+          // Single external element
+          editor.tf.insertNodes(dragItem.element as TElement, {
+            at: [...draggedColumnPath, 0],
+          });
+        }
+      } else {
+        // Move all dragged nodes into the dragged column at once
+        // First, collect all the nodes that need to be moved
+        const nodesToMove: TElement[] = [];
+        draggedElementIds.forEach((id) => {
+          const entry = editor.api.node<TElement>({ id, at: [] });
+          if (entry) {
+            nodesToMove.push(entry[0]);
+          }
+        });
+
+        // Move all nodes at once using match
+        if (nodesToMove.length > 0) {
+          editor.tf.moveNodes({
+            at: [],
+            to: [...draggedColumnPath, 0],
+            match: (n) => draggedElementIds.has(n.id as string),
+          });
+        }
+      }
+
+      // Update siblings for dropped elements that require it
+      draggedElementIds.forEach((id) => {
+        const entry = editor.api.node<TElement>({ id });
+        console.log("Entry:", entry);
+        if (entry?.[0]?.type) {
+          updateSiblingsAfterDrop(editor, entry[0], [...draggedColumnPath, 0]);
+        }
+      });
     });
 
     return;
   }
 
-  // Handle top/bottom drops (for existing nodes)
-  if (!dragPath || !to) return;
+  // Handle vertical drops (reordering)
+  if (!to) return;
 
-  // Standard node move
-  moveNodes(editor, {
-    at: dragPath,
-    to,
-  });
+  if (draggedIds.length > 1) {
+    // Handle multi-node drop for vertical reordering
+    const draggedElementIds = new Set(draggedIds);
+
+    editor.tf.moveNodes({
+      at: [],
+      to,
+      match: (n) => draggedElementIds.has(n.id as string),
+    });
+
+    // Update siblings for dropped elements that require it
+    draggedElementIds.forEach((id) => {
+      const entry = editor.api.node<TElement>({ id });
+      if (entry?.[0].type) {
+        updateSiblingsAfterDrop(editor, entry[0], to);
+      }
+    });
+  } else if (
+    isExternalNode &&
+    dragItem.element &&
+    typeof dragItem.element === "object"
+  ) {
+    // External node - insert at position
+    editor.tf.insertNodes(dragItem.element as TElement, {
+      at: to,
+    });
+  } else if (dragPath) {
+    // Single node drop - standard move
+    editor.tf.moveNodes({
+      at: dragPath,
+      to,
+    });
+    // Update siblings for dropped element that requires it
+    const droppedElement = editor.api.node<TElement>(to);
+    if (droppedElement?.[0].type) {
+      updateSiblingsAfterDrop(editor, droppedElement[0], to);
+    }
+  }
 };

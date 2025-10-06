@@ -1,17 +1,16 @@
-import { Shuffle } from "lucide-react";
+import { fetchPresentations } from "@/app/_actions/presentation/fetchPresentations";
 import { Button } from "@/components/ui/button";
 import { usePresentationState } from "@/states/presentation-state";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { Shuffle } from "lucide-react";
 import { useState } from "react";
-import { type InfiniteData, useQuery } from "@tanstack/react-query";
-import { type fetchPresentations } from "@/app/_actions/presentation/fetchPresentations";
 
-type Presentation = Awaited<ReturnType<typeof fetchPresentations>>;
-const EXAMPLE_PROMPTS = [
+export const EXAMPLE_PROMPTS = [
   {
     id: "ai-future",
     icon: "⚡",
     title: "The Future of Artificial Intelligence in Engineering",
-    slides: 12,
+    slides: 5,
     lang: "en-US",
     style: "professional",
     color: { background: "rgba(168, 85, 247, 0.1)", color: "#A855F7" },
@@ -20,7 +19,7 @@ const EXAMPLE_PROMPTS = [
     id: "sustainable-materials",
     icon: "🌍",
     title: "Sustainable Materials for Construction Projects",
-    slides: 15,
+    slides: 5,
     lang: "en-US",
     style: "traditional",
     color: { background: "rgba(239, 68, 68, 0.1)", color: "#EF4444" },
@@ -29,7 +28,7 @@ const EXAMPLE_PROMPTS = [
     id: "project-management",
     icon: "🎯",
     title: "Best Practices for Project Management in Engineering",
-    slides: 10,
+    slides: 5,
     lang: "en-US",
     style: "default",
     color: { background: "rgba(6, 182, 212, 0.1)", color: "#06B6D4" },
@@ -38,7 +37,7 @@ const EXAMPLE_PROMPTS = [
     id: "robotics",
     icon: "🤖",
     title: "Advancements in Robotics and Automation",
-    slides: 12,
+    slides: 5,
     lang: "en-US",
     style: "professional",
     color: { background: "rgba(239, 68, 68, 0.1)", color: "#EF4444" },
@@ -47,7 +46,7 @@ const EXAMPLE_PROMPTS = [
     id: "renewable-energy",
     icon: "🌱",
     title: "Innovations in Renewable Energy Technology",
-    slides: 15,
+    slides: 5,
     lang: "en-US",
     style: "default",
     color: { background: "rgba(34, 197, 94, 0.1)", color: "#22C55E" },
@@ -56,7 +55,7 @@ const EXAMPLE_PROMPTS = [
     id: "cybersecurity",
     icon: "🔒",
     title: "Cybersecurity Challenges in Engineering Systems",
-    slides: 10,
+    slides: 5,
     lang: "en-US",
     style: "professional",
     color: { background: "rgba(59, 130, 246, 0.1)", color: "#3B82F6" },
@@ -65,7 +64,7 @@ const EXAMPLE_PROMPTS = [
     id: "smart-cities",
     icon: "🌆",
     title: "Smart Cities: The Future of Urban Development",
-    slides: 12,
+    slides: 5,
     lang: "en-US",
     style: "traditional",
     color: { background: "rgba(99, 102, 241, 0.1)", color: "#6366F1" },
@@ -74,7 +73,7 @@ const EXAMPLE_PROMPTS = [
     id: "quantum-computing",
     icon: "⚛️",
     title: "Quantum Computing in Engineering Applications",
-    slides: 10,
+    slides: 5,
     lang: "en-US",
     style: "professional",
     color: { background: "rgba(139, 92, 246, 0.1)", color: "#8B5CF6" },
@@ -83,7 +82,7 @@ const EXAMPLE_PROMPTS = [
     id: "biotech",
     icon: "🧬",
     title: "Biotechnology Innovations in Engineering",
-    slides: 15,
+    slides: 5,
     lang: "en-US",
     style: "default",
     color: { background: "rgba(16, 185, 129, 0.1)", color: "#10B981" },
@@ -92,7 +91,7 @@ const EXAMPLE_PROMPTS = [
     id: "space-tech",
     icon: "🚀",
     title: "Space Technology and Engineering Challenges",
-    slides: 12,
+    slides: 5,
     lang: "en-US",
     style: "traditional",
     color: { background: "rgba(249, 115, 22, 0.1)", color: "#F97316" },
@@ -101,7 +100,7 @@ const EXAMPLE_PROMPTS = [
     id: "digital-twins",
     icon: "👥",
     title: "Digital Twins in Modern Engineering",
-    slides: 10,
+    slides: 5,
     lang: "en-US",
     style: "professional",
     color: { background: "rgba(236, 72, 153, 0.1)", color: "#EC4899" },
@@ -110,7 +109,7 @@ const EXAMPLE_PROMPTS = [
     id: "materials-science",
     icon: "⚗️",
     title: "Advanced Materials Science Breakthroughs",
-    slides: 15,
+    slides: 5,
     lang: "en-US",
     style: "default",
     color: { background: "rgba(234, 179, 8, 0.1)", color: "#EAB308" },
@@ -119,7 +118,7 @@ const EXAMPLE_PROMPTS = [
     id: "iot-engineering",
     icon: "📱",
     title: "IoT Applications in Engineering",
-    slides: 12,
+    slides: 5,
     lang: "en-US",
     style: "traditional",
     color: { background: "rgba(20, 184, 166, 0.1)", color: "#14B8A6" },
@@ -128,7 +127,7 @@ const EXAMPLE_PROMPTS = [
     id: "green-engineering",
     icon: "♻️",
     title: "Green Engineering Solutions",
-    slides: 10,
+    slides: 5,
     lang: "en-US",
     style: "professional",
     color: { background: "rgba(132, 204, 22, 0.1)", color: "#84CC16" },
@@ -137,7 +136,7 @@ const EXAMPLE_PROMPTS = [
     id: "vr-engineering",
     icon: "🥽",
     title: "VR and AR in Engineering Design",
-    slides: 12,
+    slides: 5,
     lang: "en-US",
     style: "traditional",
     color: { background: "rgba(217, 70, 239, 0.1)", color: "#D946EF" },
@@ -146,7 +145,7 @@ const EXAMPLE_PROMPTS = [
     id: "machine-learning",
     icon: "🧠",
     title: "Machine Learning for Engineering Optimization",
-    slides: 15,
+    slides: 5,
     lang: "en-US",
     style: "default",
     color: { background: "rgba(244, 63, 94, 0.1)", color: "#F43F5E" },
@@ -157,21 +156,24 @@ export function PresentationExamples() {
   const [examples, setExamples] = useState(EXAMPLE_PROMPTS.slice(0, 6));
   const { setNumSlides, setLanguage, setPageStyle, setPresentationInput } =
     usePresentationState();
+
   // Use useQuery to subscribe to the same data as RecentPresentations
-  const { data: presentationsData } = useQuery({
-    queryKey: ["presentations-all"], // Match the key exactly
-    // No queryFn needed as it will use the cache
-    queryFn: () => {
-      return { pages: [] as Presentation[] };
+  const { data, isLoading: isPresentationsLoading } = useInfiniteQuery({
+    queryKey: ["presentations-all"],
+    queryFn: async ({ pageParam = 0 }) => {
+      const response = await fetchPresentations(pageParam);
+      return response;
     },
-    enabled: true,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => (lastPage?.hasMore ? 0 : 0),
   });
 
-  console.log(presentationsData);
-  if (
-    (presentationsData as InfiniteData<Presentation>)?.pages[0]?.items?.length
-  )
-    return null;
+  // Check if there are any actual presentations in the data
+  const presentationsPages = data?.pages;
+  const hasPresentations = !!presentationsPages?.[0]?.items?.length;
+
+  // Don't show examples if presentations are still loading OR if there are presentations
+  if (isPresentationsLoading || hasPresentations) return null;
 
   const handleExampleClick = (example: (typeof EXAMPLE_PROMPTS)[0]) => {
     setPresentationInput(example.title);

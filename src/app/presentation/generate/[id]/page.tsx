@@ -1,25 +1,27 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, Wand2 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { usePresentationState } from "@/states/presentation-state";
-import {
-  type Themes,
-  themes,
-  type ThemeProperties,
-} from "@/lib/presentation/themes";
-import { Spinner } from "@/components/ui/spinner";
-import { getCustomThemeById } from "@/app/_actions/presentation/theme-actions";
 import { getPresentation } from "@/app/_actions/presentation/presentationActions";
-import { type ImageModelList } from "@/app/_actions/image/generate";
+import { getCustomThemeById } from "@/app/_actions/presentation/theme-actions";
+import { Header } from "@/components/presentation/outline/Header";
+import { OutlineList } from "@/components/presentation/outline/OutlineList";
+import { PromptInput } from "@/components/presentation/outline/PromptInput";
+import { ToolCallDisplay } from "@/components/presentation/outline/ToolCallDisplay";
 import { ThemeBackground } from "@/components/presentation/theme/ThemeBackground";
 import { ThemeSettings } from "@/components/presentation/theme/ThemeSettings";
-import { Header } from "@/components/presentation/outline/Header";
-import { PromptInput } from "@/components/presentation/outline/PromptInput";
-import { OutlineList } from "@/components/presentation/outline/OutlineList";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  themes,
+  type ThemeProperties,
+  type Themes,
+} from "@/lib/presentation/themes";
+import { usePresentationState } from "@/states/presentation-state";
+import { useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Wand2 } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+
+export const PRESENTATION_GENERATION_COOKIE = "presentation_generation_pending";
 
 export default function PresentationGenerateWithIdPage() {
   const router = useRouter();
@@ -32,11 +34,13 @@ export default function PresentationGenerateWithIdPage() {
     isGeneratingPresentation,
     isGeneratingOutline,
     setOutline,
+    setSearchResults,
     setShouldStartOutlineGeneration,
     setTheme,
-    setImageModel,
+    setImageSource,
     setPresentationStyle,
     setLanguage,
+    setWebSearchEnabled,
   } = usePresentationState();
 
   // Track if this is a fresh navigation or a revisit
@@ -57,6 +61,21 @@ export default function PresentationGenerateWithIdPage() {
       enabled: !!id,
     }
   );
+
+  // Function to clear the cookie
+  const clearPresentationCookie = () => {
+    if (typeof document === "undefined") return;
+
+    const domain =
+      window.location.hostname === "localhost" ? "localhost" : ".allweone.com";
+
+    document.cookie = `${PRESENTATION_GENERATION_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; ${domain !== "localhost" ? `domain=${domain}; ` : ""}`;
+  };
+
+  // Clear the cookie when the page loads
+  useEffect(() => {
+    clearPresentationCookie();
+  }, []);
 
   // This effect handles the immediate startup of generation upon first mount
   // only if we're coming fresh from the dashboard (isGeneratingOutline === true)
@@ -81,12 +100,30 @@ export default function PresentationGenerateWithIdPage() {
 
   // Update presentation state when data is fetched
   useEffect(() => {
-    if (presentationData && !isLoadingPresentation) {
+    if (presentationData && !isLoadingPresentation && !isGeneratingOutline) {
       setCurrentPresentation(presentationData.id, presentationData.title);
-      setPresentationInput(presentationData.title);
+      setPresentationInput(
+        presentationData.presentation?.prompt ?? presentationData.title
+      );
 
       if (presentationData.presentation?.outline) {
         setOutline(presentationData.presentation.outline);
+      }
+
+      // Load search results if available
+      if (presentationData.presentation?.searchResults) {
+        try {
+          const searchResults = Array.isArray(
+            presentationData.presentation.searchResults
+          )
+            ? presentationData.presentation.searchResults
+            : JSON.parse(presentationData.presentation.searchResults as string);
+          setWebSearchEnabled(true);
+          setSearchResults(searchResults);
+        } catch (error) {
+          console.error("Failed to parse search results:", error);
+          setSearchResults([]);
+        }
       }
 
       // Set theme if available
@@ -120,16 +157,15 @@ export default function PresentationGenerateWithIdPage() {
         }
       }
 
-      // Set imageModel if available
-      if (presentationData?.presentation?.imageModel) {
-        setImageModel(
-          presentationData?.presentation?.imageModel as ImageModelList
-        );
-      }
-
       // Set presentationStyle if available
       if (presentationData?.presentation?.presentationStyle) {
         setPresentationStyle(presentationData.presentation.presentationStyle);
+      }
+
+      if (presentationData?.presentation?.imageSource) {
+        setImageSource(
+          presentationData.presentation.imageSource as "ai" | "stock"
+        );
       }
 
       // Set language if available
@@ -144,7 +180,7 @@ export default function PresentationGenerateWithIdPage() {
     setPresentationInput,
     setOutline,
     setTheme,
-    setImageModel,
+    setImageSource,
     setPresentationStyle,
     setLanguage,
   ]);
@@ -180,17 +216,24 @@ export default function PresentationGenerateWithIdPage() {
         Back
       </Button>
 
-      <div className="mx-auto max-w-4xl space-y-8 p-8 pt-6">
-        <div className="space-y-8">
-          <Header />
-          <PromptInput />
-          <OutlineList />
+      <div className="flex flex-row justify-center">
+        {/* <GoogleAdsBanner isVertical={true} /> */}
 
-          <div className="!mb-32 space-y-4 rounded-lg border bg-muted/30 p-6">
-            <h2 className="text-lg font-semibold">Customize Theme</h2>
-            <ThemeSettings />
+        <div className="max-w-4xl space-y-8 p-8 pt-6">
+          <div className="space-y-8">
+            <Header />
+            <PromptInput />
+            <ToolCallDisplay />
+            <OutlineList />
+
+            <div className="!mb-32 space-y-4 rounded-lg border bg-muted/30 p-6">
+              <h2 className="text-lg font-semibold">Customize Theme</h2>
+              <ThemeSettings />
+            </div>
           </div>
         </div>
+
+        {/* <GoogleAdsBanner isVertical={true} /> */}
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 flex justify-center border-t bg-background/80 p-4 backdrop-blur-sm">

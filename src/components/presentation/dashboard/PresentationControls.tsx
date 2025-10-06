@@ -1,4 +1,3 @@
-import { Layout } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -7,6 +6,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePresentationState } from "@/states/presentation-state";
+import { Layout } from "lucide-react";
 
 export function PresentationControls({
   shouldShowLabel = true,
@@ -39,7 +39,7 @@ export function PresentationControls({
             <SelectValue placeholder="Select number of slides" />
           </SelectTrigger>
           <SelectContent>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20, 25, 30].map((num) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8, 10, 12].map((num) => (
               <SelectItem key={num} value={String(num)}>
                 {num} slides
               </SelectItem>

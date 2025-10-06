@@ -1,7 +1,8 @@
-import { useEffect, useState, useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePresentationState } from "@/states/presentation-state";
 import {
-  DndContext,
   closestCenter,
+  DndContext,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -14,10 +15,9 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { OutlineItem } from "./OutlineItem";
 import { Plus } from "lucide-react";
-import { usePresentationState } from "@/states/presentation-state";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useMemo, useState } from "react";
+import { OutlineItem } from "./OutlineItem";
 
 interface OutlineItemType {
   id: string;
@@ -30,6 +30,7 @@ export function OutlineList() {
     setOutline,
     numSlides,
     isGeneratingOutline,
+    webSearchEnabled,
   } = usePresentationState();
 
   const [items, setItems] = useState<OutlineItemType[]>(
@@ -84,7 +85,9 @@ export function OutlineList() {
   const handleAddCard = () => {
     const newId =
       items.length > 0
-        ? (Math.max(...items.map((item) => parseInt(item.id))) + 1).toString()
+        ? (
+            Math.max(...items.map((item) => parseInt(item.id, 10))) + 1
+          ).toString()
         : "1";
     const newItems = [...items, { id: newId, title: "New Card" }];
     setItems(newItems);
@@ -106,6 +109,12 @@ export function OutlineList() {
     const loadedCount = items.length;
     const remainingCount = Math.max(0, totalSlides - loadedCount);
 
+    // Show skeleton placeholders when web search is enabled and outline is empty (before generation starts)
+    const showSkeletonPlaceholders =
+      webSearchEnabled && items.length === 0 && !isGeneratingOutline;
+    // Show loading skeletons only when actually generating outline
+    const showLoadingSkeletons = isGeneratingOutline && remainingCount > 0;
+
     return (
       <DndContext
         sensors={sensors}
@@ -126,9 +135,13 @@ export function OutlineList() {
             ))}
           </div>
         </SortableContext>
-        {isGeneratingOutline &&
+        {/* Show skeleton placeholders when web search enabled but no outline yet */}
+        {showSkeletonPlaceholders && <Skeleton className="h-96 w-full" />}
+
+        {/* Show loading skeletons only when actually generating */}
+        {showLoadingSkeletons &&
           Array.from({ length: remainingCount }).map((_, index) => (
-            <Skeleton key={`skeleton-${index}`} className="h-16 w-full" />
+            <Skeleton key={`loading-${index}`} className="h-16 w-full" />
           ))}
       </DndContext>
     );
@@ -136,6 +149,7 @@ export function OutlineList() {
     items,
     numSlides,
     isGeneratingOutline,
+    webSearchEnabled,
     sensors,
     handleDragEnd,
     handleTitleChange,
@@ -149,6 +163,11 @@ export function OutlineList() {
         {isGeneratingOutline && (
           <span className="animate-pulse text-xs text-muted-foreground">
             Generating outline...
+          </span>
+        )}
+        {webSearchEnabled && items.length === 0 && !isGeneratingOutline && (
+          <span className="text-xs text-muted-foreground">
+            Ready to generate
           </span>
         )}
       </div>

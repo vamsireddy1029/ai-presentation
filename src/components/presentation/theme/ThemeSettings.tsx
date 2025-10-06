@@ -1,4 +1,5 @@
-import { usePresentationState } from "@/states/presentation-state";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -6,24 +7,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import { type Themes, themes } from "@/lib/presentation/themes";
+import { cn } from "@/lib/utils";
+import { usePresentationState } from "@/states/presentation-state";
 import { useTheme } from "next-themes";
-import { type ImageModelList } from "@/app/_actions/image/generate";
 import { ThemeModal } from "./ThemeModal";
-import { Button } from "@/components/ui/button";
-
-export const IMAGE_MODELS: { value: ImageModelList; label: string }[] = [
-  { value: "black-forest-labs/FLUX1.1-pro", label: "FLUX 1.1 [pro]" },
-  { value: "black-forest-labs/FLUX.1-schnell", label: "FLUX.1 [schnell]" },
-  {
-    value: "black-forest-labs/FLUX.1-schnell-Free",
-    label: "FLUX.1 [schnell] Free",
-  },
-  { value: "black-forest-labs/FLUX.1-pro", label: "FLUX.1 [pro]" },
-  { value: "black-forest-labs/FLUX.1-dev", label: "FLUX.1 [dev]" },
-];
+import { ImageSourceSelector } from "./ImageSourceSelector";
 
 const PRESENTATION_STYLES = [
   { value: "professional", label: "Professional" },
@@ -34,7 +23,16 @@ const PRESENTATION_STYLES = [
 ];
 
 export function ThemeSettings() {
-  const { theme, setTheme, imageModel, setImageModel } = usePresentationState();
+  const {
+    theme,
+    setTheme,
+    imageModel,
+    setImageModel,
+    imageSource,
+    setImageSource,
+    stockImageProvider,
+    setStockImageProvider,
+  } = usePresentationState();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -74,8 +72,8 @@ export function ThemeSettings() {
                     theme === key
                       ? `${modeColors.primary}${isDark ? "15" : "08"}`
                       : isDark
-                      ? "rgba(0,0,0,0.3)"
-                      : "rgba(255,255,255,0.9)",
+                        ? "rgba(0,0,0,0.3)"
+                        : "rgba(255,255,255,0.9)",
                 }}
               >
                 <div
@@ -124,24 +122,16 @@ export function ThemeSettings() {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <Label className="text-sm font-medium">Image Generation Model</Label>
-        <Select
-          value={imageModel || "black-forest-labs/FLUX.1-schnell-Free"}
-          onValueChange={(value) => setImageModel(value as ImageModelList)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select image model" />
-          </SelectTrigger>
-          <SelectContent>
-            {IMAGE_MODELS.map((model) => (
-              <SelectItem key={model.value} value={model.value}>
-                {model.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <ImageSourceSelector
+        imageSource={imageSource}
+        imageModel={imageModel}
+        stockImageProvider={stockImageProvider}
+        onImageSourceChange={setImageSource}
+        onImageModelChange={setImageModel}
+        onStockImageProviderChange={setStockImageProvider}
+        className="space-y-4"
+        showLabel={true}
+      />
 
       <div className="space-y-4">
         <Label className="text-sm font-medium">Presentation Style</Label>

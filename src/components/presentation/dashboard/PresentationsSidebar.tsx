@@ -1,26 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
-import { useInView } from "react-intersection-observer";
-import { FileX, Plus } from "lucide-react";
+import { fetchPresentations } from "@/app/_actions/presentation/fetchPresentations";
+import { deletePresentations } from "@/app/_actions/presentation/presentationActions";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/use-toast";
 import { usePresentationState } from "@/states/presentation-state";
-import { useMutation } from "@tanstack/react-query";
-import { PresentationItem } from "../PresentationItem";
 import { type Prisma } from "@prisma/client";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { FileX, Plus } from "lucide-react";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { PresentationItem } from "./PresentationItem";
 import { SelectionControls } from "./SelectionControls";
-import { deletePresentations } from "@/app/_actions/presentation/presentationActions";
-import { fetchPresentations } from "@/app/_actions/presentation/fetchPresentations";
 
 type PresentationDocument = Prisma.BaseDocumentGetPayload<{
   include: {
@@ -33,7 +36,11 @@ interface PresentationResponse {
   hasMore: boolean;
 }
 
-export function PresentationsSidebar() {
+export function PresentationsSidebar({
+  side = "left",
+}: {
+  side?: "left" | "right";
+}) {
   const { ref: loadMoreRef, inView } = useInView();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -175,14 +182,8 @@ export function PresentationsSidebar() {
     <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <SheetContent
         overlay={false}
-        side="left"
-        className="absolute flex h-full w-[400px] flex-col p-0"
-        container={
-          typeof document !== "undefined"
-            ? document.querySelector<HTMLElement>(".notebook-section") ??
-              undefined
-            : undefined
-        }
+        side={side}
+        className="absolute flex h-full w-[400px] flex-col border p-0"
       >
         <div className="p-6">
           <SheetHeader className="space-y-4">

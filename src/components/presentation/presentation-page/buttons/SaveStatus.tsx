@@ -1,9 +1,9 @@
 "use client";
-import { CheckCircle, Loader2 } from "lucide-react";
 import { usePresentationState } from "@/states/presentation-state";
+import { CheckCircle, Loader2 } from "lucide-react";
 
 export function SaveStatus() {
-  const { savingStatus } = usePresentationState();
+  const savingStatus = usePresentationState((s) => s.savingStatus);
 
   if (savingStatus === "idle") return null;
 

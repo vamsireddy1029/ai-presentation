@@ -1,5 +1,5 @@
 /** Get new direction if updated */
-import type { DropLineDirection } from "@udecode/plate-dnd";
+import { type DropLineDirection } from "@platejs/dnd";
 
 export const getNewDirection = (
   previousDir: string,

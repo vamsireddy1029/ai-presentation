@@ -1,98 +1,187 @@
 "use client";
 
-import { ParagraphPlugin } from "@udecode/plate-common/react";
-import { ImagePlugin } from "@udecode/plate-media/react";
-import { MarkdownPlugin } from "@udecode/plate-markdown";
-import { HeadingPlugin } from "@udecode/plate-heading/react";
-import { BlockquotePlugin } from "@udecode/plate-block-quote/react";
+import { BulletGroupPlugin, BulletItemPlugin } from "./plugins/bullet-plugin";
+import { CycleItemPlugin, CyclePlugin } from "./plugins/cycle-plugin";
+import { GeneratingPlugin } from "./plugins/generating-plugin";
+import { IconListItemPlugin, IconListPlugin } from "./plugins/icon-list-plugin";
+import { IconPlugin } from "./plugins/icon-plugin";
 import {
-  BoldPlugin,
-  ItalicPlugin,
-  UnderlinePlugin,
-  StrikethroughPlugin,
-} from "@udecode/plate-basic-marks/react";
-import { ColumnPlugin, ColumnItemPlugin } from "@udecode/plate-layout/react";
-import { autoformatPlugin } from "@/components/text-editor/plugins/autoformat-plugin";
-import { softBreakPlugin } from "@/components/text-editor/plugins/soft-break-plugin";
-import { exitBreakPlugin } from "@/components/text-editor/plugins/exit-break-plugin";
-import { resetBlockTypePlugin } from "@/components/text-editor/plugins/reset-block-type-plugin";
-import { blockSelectionPlugins } from "@/components/text-editor/plugins/block-selection-plugin";
-import { dndPlugins } from "@/components/text-editor/plugins/dnd-plugin";
-import { VisualizationListPlugin } from "./custom-elements/visualization-list-plugin";
-import { VisualizationItemPlugin } from "./custom-elements/visualization-item-plugin";
-import {
-  SlashInputPlugin,
-  SlashPlugin,
-} from "@udecode/plate-slash-command/react";
-import {
-  BulletPlugin,
-  BulletsPlugin,
-} from "./custom-elements/bullets-elements";
-import {
-  StaircasePlugin,
+  StaircaseGroupPlugin,
   StairItemPlugin,
-} from "./custom-elements/staircase-element";
-import { CycleItemPlugin, CyclePlugin } from "./custom-elements/cycle-element";
-import { FontFamilyPlugin } from "@udecode/plate-font/react";
-import { IconPlugin } from "./custom-elements/icon";
-import { IconItemPlugin, IconsPlugin } from "./custom-elements/icons-element";
-import { GeneratingPlugin } from "./custom-elements/generating-leaf";
+} from "./plugins/staircase-plugin";
 // Create presentation-specific plugins
+
+import { AIKit } from "@/components/plate/plugins/ai-kit";
+import { AlignKit } from "@/components/plate/plugins/align-kit";
+import { AutoformatKit } from "@/components/plate/plugins/autoformat-kit";
+import { BasicMarksKit } from "@/components/plate/plugins/basic-marks-kit";
+import { BlockMenuKit } from "@/components/plate/plugins/block-menu-kit";
+import { BlockPlaceholderKit } from "@/components/plate/plugins/block-placeholder-kit";
+import { CalloutKit } from "@/components/plate/plugins/callout-kit";
+import { CodeBlockKit } from "@/components/plate/plugins/code-block-kit";
+import { ColumnKit } from "@/components/plate/plugins/column-kit";
+import { CommentKit } from "@/components/plate/plugins/comment-kit";
+import { CursorOverlayKit } from "@/components/plate/plugins/cursor-overlay-kit";
+import { DateKit } from "@/components/plate/plugins/date-kit";
+import { DiscussionKit } from "@/components/plate/plugins/discussion-kit";
+import { DndKit } from "@/components/plate/plugins/dnd-kit";
+import { ExitBreakKit } from "@/components/plate/plugins/exit-break-kit";
+import { FixedToolbarKit } from "@/components/plate/plugins/fixed-toolbar-kit";
+import { FloatingToolbarKit } from "@/components/plate/plugins/floating-toolbar-kit";
+import { FontKit } from "@/components/plate/plugins/font-kit";
+import { LineHeightKit } from "@/components/plate/plugins/line-height-kit";
+import { LinkKit } from "@/components/plate/plugins/link-kit";
+import { ListKit } from "@/components/plate/plugins/list-kit";
+import { MarkdownKit } from "@/components/plate/plugins/markdown-kit";
+import { MathKit } from "@/components/plate/plugins/math-kit";
+import { MentionKit } from "@/components/plate/plugins/mention-kit";
+import { SlashKit } from "@/components/plate/plugins/slash-kit";
+import { SuggestionKit } from "@/components/plate/plugins/suggestion-kit";
+// import { TableKit } from "@/components/plate/plugins/table-kit";
+import { TocKit } from "@/components/plate/plugins/toc-kit";
+import { ToggleKit } from "@/components/plate/plugins/toggle-kit";
+import { ArrowListItemPlugin, ArrowListPlugin } from "./plugins/arrow-plugin";
+import { BasicBlocksKit } from "./plugins/basic-blocks-kit";
+import {
+  BeforeAfterGroupPlugin,
+  BeforeAfterSidePlugin,
+} from "./plugins/before-after-plugin";
+import { BoxGroupPlugin, BoxItemPlugin } from "./plugins/box-plugin";
+import { ButtonPlugin } from "./plugins/button-plugin";
+import {
+  AreaChartPlugin,
+  BarChartPlugin,
+  LineChartPlugin,
+  PieChartPlugin,
+  RadarChartPlugin,
+  ScatterChartPlugin,
+} from "./plugins/chart-plugin";
+import {
+  CompareGroupPlugin,
+  CompareSidePlugin,
+} from "./plugins/compare-plugin";
+import {
+  VisualizationItemPlugin,
+  VisualizationListPlugin,
+} from "./plugins/legacy/visualization-list-plugin";
+import { MediaKit } from "./plugins/media-kit";
+import { PresentationTableKit } from "./plugins/presentation-table-kit";
+import {
+  ConsItemPlugin,
+  ProsConsGroupPlugin,
+  ProsItemPlugin,
+} from "./plugins/pros-cons-plugin";
+import {
+  PyramidGroupPlugin,
+  PyramidItemPlugin,
+} from "./plugins/pyramid-plugin";
+import {
+  SequenceArrowGroupPlugin,
+  SequenceArrowItemPlugin,
+} from "./plugins/sequence-arrow-plugin";
+import { TimelineItemPlugin, TimelinePlugin } from "./plugins/timeline-plugin";
+// import { TablePlugin, TableRowPlugin, TableCellPlugin } from "./plugins/table-plugin";
+
 export const presentationPlugins = [
-  // Basic nodes
-  HeadingPlugin.configure({
-    options: { levels: 6 },
-  }),
-  BlockquotePlugin,
-  ParagraphPlugin,
+  ...AIKit,
 
-  FontFamilyPlugin,
-  // Basic marks
-  BoldPlugin,
-  ItalicPlugin,
-  UnderlinePlugin,
-  StrikethroughPlugin,
+  // Elements
+  ...BasicBlocksKit,
+  ...CodeBlockKit,
+  // Replace default table with themed presentation table
+  ...PresentationTableKit,
+  ...ToggleKit,
+  ...TocKit,
+  ...MediaKit,
+  ...CalloutKit,
+  ...ColumnKit,
+  ...MathKit,
+  ...DateKit,
+  ...LinkKit,
+  ...MentionKit,
 
-  // Media
-  ImagePlugin.extend({
-    options: { disableUploadInsert: false },
-  }),
+  // Marks
+  ...BasicMarksKit,
+  ...FontKit,
 
-  // Layout
-  ColumnPlugin.configure({
-    options: {
-      spacing: 20,
-    },
-  }),
-  ColumnItemPlugin,
+  // Block Style
+  ...ListKit,
+  ...AlignKit,
+  ...LineHeightKit,
+
+  // Collaboration
+  ...DiscussionKit,
+  ...CommentKit,
+  ...SuggestionKit,
+
+  // Editing
+  ...SlashKit,
+  ...AutoformatKit,
+  ...CursorOverlayKit,
+  ...BlockMenuKit,
+  ...DndKit,
+  ...ExitBreakKit,
+
+  // Parsers
+  ...MarkdownKit,
+
+  // UI
+  ...BlockPlaceholderKit,
+  ...FixedToolbarKit,
+  ...FloatingToolbarKit,
+  // TrailingBlockPlugin,
 
   // Custom ELements
   VisualizationListPlugin,
   VisualizationItemPlugin,
 
-  BulletPlugin,
-  BulletsPlugin,
+  BulletGroupPlugin,
+  BulletItemPlugin,
 
-  StaircasePlugin,
+  StaircaseGroupPlugin,
   StairItemPlugin,
 
   IconPlugin,
-  IconsPlugin,
-  IconItemPlugin,
+  IconListPlugin,
+  IconListItemPlugin,
+
+  ArrowListPlugin,
+  ArrowListItemPlugin,
+
+  TimelinePlugin,
+  TimelineItemPlugin,
+
+  PyramidGroupPlugin,
+  PyramidItemPlugin,
+
+  // New components
+  BoxGroupPlugin,
+  BoxItemPlugin,
+
+  CompareGroupPlugin,
+  CompareSidePlugin,
+
+  BeforeAfterGroupPlugin,
+  BeforeAfterSidePlugin,
+
+  ProsConsGroupPlugin,
+  ProsItemPlugin,
+  ConsItemPlugin,
+
+  SequenceArrowGroupPlugin,
+  SequenceArrowItemPlugin,
+
+  // Individual chart elements
+  PieChartPlugin,
+  BarChartPlugin,
+  AreaChartPlugin,
+  RadarChartPlugin,
+  ScatterChartPlugin,
+  LineChartPlugin,
 
   CycleItemPlugin,
   CyclePlugin,
 
   GeneratingPlugin,
-  // Functionality
-  autoformatPlugin,
-  exitBreakPlugin,
-  resetBlockTypePlugin,
-  ...blockSelectionPlugins,
-  softBreakPlugin,
-  ...dndPlugins,
-  SlashInputPlugin,
-  SlashPlugin,
-  // Deserialization
-  MarkdownPlugin.configure({ options: { indentList: true } }),
-] as const;
+  ButtonPlugin,
+];

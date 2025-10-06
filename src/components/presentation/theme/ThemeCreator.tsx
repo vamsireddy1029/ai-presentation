@@ -1,26 +1,26 @@
 "use client";
 
-import { useState, useEffect, type ReactNode } from "react";
+import { createCustomTheme } from "@/app/_actions/presentation/theme-actions";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { useForm, Controller } from "react-hook-form";
 import { useUploadThing } from "@/hooks/globals/useUploadthing";
-import { Loader2, Plus } from "lucide-react";
 import { themes } from "@/lib/presentation/themes";
-import { createCustomTheme } from "@/app/_actions/presentation/theme-actions";
+import { Loader2, Plus } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { Controller, useForm } from "react-hook-form";
 
+import { usePresentationState } from "@/states/presentation-state";
+import { ColorPicker } from "./ColorPicker";
+import { FontSelector } from "./FontSelector";
+import { LogoUploader } from "./LogoUploader";
 import { ThemePreview } from "./ThemePreview";
 import { type ColorKey, type ThemeFormValues } from "./types";
-import { LogoUploader } from "./LogoUploader";
-import { FontSelector } from "./FontSelector";
-import { ColorPicker } from "./ColorPicker";
-import { usePresentationState } from "@/states/presentation-state";
 
 // Define steps for the stepper
 const STEPS = [
@@ -169,7 +169,7 @@ export function ThemeCreator({ children }: { children?: ReactNode }) {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "An unexpected error occurred",

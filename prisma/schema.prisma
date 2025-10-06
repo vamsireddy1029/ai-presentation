@@ -99,10 +99,12 @@ model Presentation {
     id                String       @id @default(cuid())
     content           Json // Presentation content including slides, theme, etc.
     theme             String       @default("default")
-    imageModel        String? // The image model used for generating images
+    imageSource       String       @default("ai") // The image model used for generating images
+    prompt            String? // The prompt used for generating the presentation
     presentationStyle String? // The style of the presentation
     language          String?      @default("en-US") // The language of the presentation
     outline           String[] // Store the presentation outline
+    searchResults     Json? // Store the search results
     base              BaseDocument @relation(fields: [id], references: [id], onDelete: Cascade)
     templateId        String?
     customThemeId     String? // Reference to custom theme if used

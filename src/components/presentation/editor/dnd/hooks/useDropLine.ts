@@ -1,6 +1,7 @@
-import { useEditorPlugin, useElement } from "@udecode/plate/react";
+import { useElement, usePluginOptions } from "platejs/react";
 
-import { DndPlugin, type DropLineDirection } from "@udecode/plate-dnd";
+import { MultiDndPlugin } from "@/components/plate/plugins/dnd-kit";
+import { type DropLineDirection } from "@platejs/dnd";
 
 export const useDropLine = ({
   id: idProp,
@@ -11,14 +12,18 @@ export const useDropLine = ({
   dropLine?: DropLineDirection;
 } => {
   const element = useElement();
-  const id = idProp ?? (element.id as string);
+  const id = idProp || (element.id as string);
 
-  const { useOption } = useEditorPlugin(DndPlugin);
+  const dropLine =
+    usePluginOptions(MultiDndPlugin, ({ dropTarget }) => {
+      if (!dropTarget) return null;
+      if (dropTarget.id !== id) return null;
 
-  const dropLine = useOption("dropTarget");
-  if (!dropLine) return { dropLine: "" };
-  if (dropLine.id !== id) return { dropLine: "" };
+      return dropTarget.line;
+    }) ?? "";
+
+  // Return the drop line direction as-is (supports all directions)
   return {
-    dropLine: dropLine.line,
+    dropLine,
   };
 };

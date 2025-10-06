@@ -1,7 +1,7 @@
-import { useCallback, useRef, useEffect } from "react";
-import debounce from "lodash.debounce";
-import { usePresentationState } from "@/states/presentation-state";
 import { updatePresentation } from "@/app/_actions/presentation/presentationActions";
+import { usePresentationState } from "@/states/presentation-state";
+import debounce from "lodash.debounce";
+import { useCallback, useEffect, useRef } from "react";
 
 interface UseDebouncedSaveOptions {
   /**
@@ -29,14 +29,15 @@ export const useDebouncedSave = (options: UseDebouncedSaveOptions = {}) => {
           slides,
           currentPresentationId,
           currentPresentationTitle,
-          theme,
           outline,
-          imageModel,
+          imageSource,
           presentationStyle,
           language,
+          config,
+          thumbnailUrl,
         } = usePresentationState.getState();
 
-        // Don't save if we're generating content or if there's no presentation
+        // Don't save if there's no presentation or slides
         if (!currentPresentationId || slides.length === 0) return;
         try {
           setSavingStatus("saving");
@@ -45,13 +46,14 @@ export const useDebouncedSave = (options: UseDebouncedSaveOptions = {}) => {
             id: currentPresentationId,
             content: {
               slides,
+              config,
             },
             title: currentPresentationTitle ?? "",
             outline,
-            theme,
-            imageModel,
+            imageSource,
             presentationStyle,
             language,
+            thumbnailUrl,
           });
 
           setSavingStatus("saved");
@@ -85,11 +87,12 @@ export const useDebouncedSave = (options: UseDebouncedSaveOptions = {}) => {
       slides,
       currentPresentationId,
       currentPresentationTitle,
-      theme,
       outline,
-      imageModel,
+      imageSource,
       presentationStyle,
       language,
+      config,
+      thumbnailUrl,
     } = usePresentationState.getState();
 
     // Don't save if there's no presentation
@@ -102,13 +105,14 @@ export const useDebouncedSave = (options: UseDebouncedSaveOptions = {}) => {
         id: currentPresentationId,
         content: {
           slides,
+          config,
         },
         title: currentPresentationTitle ?? "",
         outline,
         language,
-        imageModel,
+        imageSource,
         presentationStyle,
-        theme,
+        thumbnailUrl,
       });
 
       setSavingStatus("saved");

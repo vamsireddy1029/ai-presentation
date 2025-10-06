@@ -1,54 +1,66 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { usePresentationState } from "@/states/presentation-state";
-
-import {
-  type Themes,
-  themes,
-  setThemeVariables,
-  type ThemeProperties,
-} from "@/lib/presentation/themes";
-import { useTheme } from "next-themes";
-
-import { getCustomThemeById } from "@/app/_actions/presentation/theme-actions";
-import debounce from "lodash.debounce";
-import { PresentationSlidesView } from "./PresentationSlidesView";
-import { LoadingState } from "./Loading";
-import { PresentationLayout } from "./PresentationLayout";
-import { type Value } from "@udecode/plate-common";
 import {
   getPresentation,
+  updatePresentation,
   updatePresentationTheme,
 } from "@/app/_actions/presentation/presentationActions";
-import { type PlateNode, type PlateSlide } from "../utils/parser";
-import { type ImageModelList } from "@/app/_actions/image/generate";
+import { getCustomThemeById } from "@/app/_actions/presentation/theme-actions";
+import { type PlateSlide } from "@/components/presentation/utils/parser";
+import {
+  setThemeVariables,
+  type ThemeProperties,
+  type Themes,
+  themes,
+} from "@/lib/presentation/themes";
+import { usePresentationState } from "@/states/presentation-state";
+import { useQuery } from "@tanstack/react-query";
+import debounce from "lodash.debounce";
+import { useTheme } from "next-themes";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { LoadingState } from "./Loading";
+import { PresentationLayout } from "./PresentationLayout";
+import { PresentationSlidesView } from "./PresentationSlidesView";
 
 export default function PresentationPage() {
   const params = useParams();
   const id = params.id as string;
   const { resolvedTheme } = useTheme();
   const [shouldFetchData, setSetShouldFetchData] = useState(true);
-  const {
-    setCurrentPresentation,
-    setPresentationInput,
-    setOutline,
-    setSlides,
-    isGeneratingPresentation,
-    setTheme,
-    setImageModel,
-    setPresentationStyle,
-    setLanguage,
-    theme,
-  } = usePresentationState();
+  const setCurrentPresentation = usePresentationState(
+    (s) => s.setCurrentPresentation
+  );
+  const setPresentationInput = usePresentationState(
+    (s) => s.setPresentationInput
+  );
+  const setOutline = usePresentationState((s) => s.setOutline);
+  const setSlides = usePresentationState((s) => s.setSlides);
+  const setThumbnailUrl = usePresentationState((s) => s.setThumbnailUrl);
+  const isGeneratingPresentation = usePresentationState(
+    (s) => s.isGeneratingPresentation
+  );
+  const setTheme = usePresentationState((s) => s.setTheme);
+  const setImageModel = usePresentationState((s) => s.setImageModel);
+  const setImageSource = usePresentationState((s) => s.setImageSource);
+  const setPresentationStyle = usePresentationState(
+    (s) => s.setPresentationStyle
+  );
+  const currentSlideIndex = usePresentationState((s) => s.currentSlideIndex);
+  const setLanguage = usePresentationState((s) => s.setLanguage);
+  const theme = usePresentationState((s) => s.theme);
+  // Track the theme value as it exists in the database to avoid redundant saves on hydration
+  const dbThemeRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (isGeneratingPresentation) {
       setSetShouldFetchData(false);
     }
   }, [isGeneratingPresentation]);
+
+  useEffect(() => {
+    console.log("Current Slide Index", currentSlideIndex);
+  }, [currentSlideIndex]);
 
   // Use React Query to fetch presentation data
   const { data: presentationData, isLoading } = useQuery({
@@ -63,31 +75,9 @@ export default function PresentationPage() {
     enabled: !!id && !isGeneratingPresentation && shouldFetchData,
   });
 
-  // Handle slide content changes
-  const handleSlideChange = useCallback((value: Value, slideIndex: number) => {
-    const { slides, isGeneratingPresentation, isPresenting } =
-      usePresentationState.getState();
-
-    if (isGeneratingPresentation || isPresenting) return;
-
-    const updatedSlides = [...slides];
-    // Make sure we have the slide at that index
-    if (updatedSlides[slideIndex]) {
-      // Update the content of the slide
-      updatedSlides[slideIndex] = {
-        ...updatedSlides[slideIndex],
-        content: value as PlateNode[],
-      };
-
-      // Update the global state
-      setSlides(updatedSlides);
-    }
-  }, []);
-
   // Create a debounced function to update the theme in the database
   const debouncedThemeUpdate = useCallback(
     debounce((presentationId: string, newTheme: string) => {
-      console.log("Updating theme in database:", newTheme);
       updatePresentationTheme(presentationId, newTheme)
         .then((result) => {
           if (result.success) {
@@ -111,17 +101,74 @@ export default function PresentationPage() {
     }
 
     if (presentationData) {
-      console.log("Loading complete presentation data:", presentationData);
+      // Record the theme as it exists in the DB so initial hydration doesn't trigger a save
+      dbThemeRef.current = presentationData.presentation?.theme ?? null;
       setCurrentPresentation(presentationData.id, presentationData.title);
-      setPresentationInput(presentationData.title);
+      setPresentationInput(
+        presentationData.presentation?.prompt ?? presentationData.title
+      );
 
       // Load all content from the database
-      const presentationContent = presentationData.presentation?.content as {
+      const presentationContent = presentationData.presentation
+        ?.content as unknown as {
         slides: PlateSlide[];
+        config: Record<string, unknown>;
       };
 
       // Set slides
       setSlides(presentationContent?.slides ?? []);
+
+      // If there's no thumbnail yet, derive from first available rootImage or first img element
+      const currentThumb = presentationData.thumbnailUrl;
+      if (!currentThumb) {
+        const slides = presentationContent?.slides ?? [];
+        const deriveFromSlides = (): string | null => {
+          if (!Array.isArray(slides) || slides.length === 0) return null;
+          const firstRoot = slides[0]?.rootImage?.url;
+          if (typeof firstRoot === "string" && firstRoot) return firstRoot;
+          for (const s of slides) {
+            const u = s?.rootImage?.url;
+            if (typeof u === "string" && u) return u;
+          }
+          const findFirstImgUrl = (nodes: unknown[]): string | null => {
+            for (const n of nodes) {
+              if (!n || typeof n !== "object") continue;
+              const anyNode = n as Record<string, unknown>;
+              if (anyNode.type === "img" && typeof anyNode.url === "string") {
+                return anyNode.url as string;
+              }
+              const children = anyNode.children as unknown[] | undefined;
+              if (Array.isArray(children)) {
+                const found = findFirstImgUrl(children);
+                if (found) return found;
+              }
+            }
+            return null;
+          };
+          for (const s of slides) {
+            const nodes = (s as unknown as { content?: unknown[] }).content;
+            if (Array.isArray(nodes)) {
+              const found = findFirstImgUrl(nodes);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        const derived = deriveFromSlides();
+        if (derived) {
+          setThumbnailUrl(derived);
+          void updatePresentation({
+            id: presentationData.id,
+            thumbnailUrl: derived,
+          });
+        }
+      }
+
+      // Background override (optional persisted field)
+      if (presentationContent?.config?.backgroundOverride !== undefined) {
+        const { setConfig } = usePresentationState.getState();
+        setConfig(presentationContent.config as Record<string, unknown>);
+      }
 
       // Set outline
       if (presentationData.presentation?.outline) {
@@ -158,10 +205,9 @@ export default function PresentationPage() {
         }
       }
 
-      // Set imageModel if available
-      if (presentationData?.presentation?.imageModel) {
-        setImageModel(
-          presentationData?.presentation?.imageModel as ImageModelList
+      if (presentationData?.presentation?.imageSource) {
+        setImageSource(
+          presentationData.presentation.imageSource as "ai" | "stock"
         );
       }
 
@@ -189,18 +235,23 @@ export default function PresentationPage() {
     setLanguage,
   ]);
 
-  // Update theme when it changes
+  // Update theme when it changes (but not on initial hydration)
   useEffect(() => {
-    if (theme && id && !isLoading) {
-      debouncedThemeUpdate(id, theme);
-    }
+    if (!id || isLoading || !theme) return;
+    // If we don't yet know the DB theme, skip until hydration sets it
+    if (dbThemeRef.current === null) return;
+    // Skip if the current theme matches the DB state (hydration)
+    if (theme === dbThemeRef.current) return;
+
+    // Persist the new theme and update our DB baseline to prevent repeat writes
+    dbThemeRef.current = theme as string;
+    debouncedThemeUpdate(id, theme as string);
   }, [theme, id, debouncedThemeUpdate, isLoading]);
 
   // Set theme variables when theme changes
   useEffect(() => {
     if (theme && resolvedTheme) {
       const state = usePresentationState.getState();
-
       // Check if we have custom theme data
       if (state.customThemeData) {
         setThemeVariables(state.customThemeData, resolvedTheme === "dark");
@@ -236,10 +287,9 @@ export default function PresentationPage() {
       isLoading={isLoading}
       themeData={currentThemeData ?? undefined}
     >
-      <div className="mx-auto max-w-[90%] space-y-8 p-8 pt-16">
+      <div className="mx-auto max-w-[90%] space-y-8 pt-16">
         <div className="space-y-8">
           <PresentationSlidesView
-            handleSlideChange={handleSlideChange}
             isGeneratingPresentation={isGeneratingPresentation}
           />
         </div>

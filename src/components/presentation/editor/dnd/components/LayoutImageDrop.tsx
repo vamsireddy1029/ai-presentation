@@ -1,23 +1,18 @@
+import { type LayoutType } from "@/components/presentation/utils/parser";
+import { cn } from "@/lib/utils";
+import { usePresentationState } from "@/states/presentation-state";
+import { DRAG_ITEM_BLOCK } from "@platejs/dnd";
+import { ImagePlugin } from "@platejs/media/react";
+import { type TElement } from "platejs";
+import { useEditorRef, type PlateEditor } from "platejs/react";
 import { useRef } from "react";
 import { useDrop } from "react-dnd";
-import { cn } from "@udecode/cn";
-import { DRAG_ITEM_BLOCK } from "@udecode/plate-dnd";
-import { type PlateEditor, useEditorRef } from "@udecode/plate-core/react";
-import { findNode, removeNodes, type TElement } from "@udecode/plate-common";
-import { usePresentationState } from "@/states/presentation-state";
-import { ImagePlugin } from "@udecode/plate-media/react";
-import { type LayoutType } from "@/components/presentation/utils/parser";
 
-function removeNodeById(editor: PlateEditor, id: string) {
-  const nodeWithPath = findNode(editor, {
-    match: {
-      id,
-    },
-  });
+function removeNodeById(editor: PlateEditor, element: TElement) {
+  const path = editor.api.findPath(element);
 
-  if (!nodeWithPath) return;
-  const [element, path] = nodeWithPath;
-  removeNodes(editor, { at: path });
+  if (!path) return;
+  editor.tf.removeNodes({ at: path });
   return element;
 }
 
@@ -44,13 +39,13 @@ export default function LayoutImageDrop({
     let imageQuery = item.element.query as string;
 
     // Check if the image is from the editor and needs to be removed
-    const id = item.element.id as string;
-    const element = removeNodeById(editor, id);
+    const element = removeNodeById(editor, item.element);
     if (element?.url) imageUrl = element.url as string;
     if (element?.query) imageQuery = element.query as string;
 
     // Get the current slides state
-    const { slides, setSlides } = usePresentationState.getState();
+    const { slides, setSlides, setCurrentSlideIndex } =
+      usePresentationState.getState();
 
     // Update the slides array with the new root image and layout type
     const updatedSlides = slides.map((slide, index) => {
@@ -67,8 +62,9 @@ export default function LayoutImageDrop({
       return slide;
     });
 
-    // Update the slides state
+    // Update the slides state and current slide index
     setSlides(updatedSlides);
+    setCurrentSlideIndex(slideIndex);
   };
 
   // Setup drop zones

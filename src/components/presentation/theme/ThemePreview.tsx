@@ -33,7 +33,7 @@ export function ThemePreview({
     >
       {logoPreview && (
         <div className="mb-4 flex justify-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/** biome-ignore lint/performance/noImgElement: This is a valid use case */}
           <img
             src={logoPreview}
             alt="Theme Logo"

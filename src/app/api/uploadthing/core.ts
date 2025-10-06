@@ -31,6 +31,27 @@ export const ourFileRouter = {
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
     }),
+  editorUploader: f({
+    image: { maxFileSize: "4MB" },
+    pdf: { maxFileSize: "16MB" },
+    text: { maxFileSize: "16MB" },
+    video: { maxFileSize: "64MB" },
+  })
+    .middleware(async () => {
+      const session = await auth();
+      if (!session) throw new UploadThingError("Unauthorized");
+      return { userId: session.user.id };
+    })
+    .onUploadComplete(async ({ file }) => {
+      // Simply return the file URL and name
+      return {
+        key: file.key,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        url: file.ufsUrl,
+      };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

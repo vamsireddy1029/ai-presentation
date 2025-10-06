@@ -1,38 +1,41 @@
 "use client";
 
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import { SlideContainer } from "@/components/presentation/presentation-page/SlideContainer";
+import { usePresentationSlides } from "@/hooks/presentation/usePresentationSlides";
 import { useSlideChangeWatcher } from "@/hooks/presentation/useSlideChangeWatcher";
+import { cn } from "@/lib/utils";
+import { usePresentationState } from "@/states/presentation-state";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { SlidePreviewRenderer } from "./SlidePreviewRenderer";
-import { usePresentationSlides } from "@/hooks/presentation/usePresentationSlides";
-import { type TElement } from "@udecode/plate-common";
-import { usePresentationState } from "@/states/presentation-state";
-import { cn } from "@/lib/utils";
+import { PlateController } from "platejs/react";
 import { useEffect } from "react";
-import { SlideContainer } from "./SlideContainer";
+import { GlobalUndoRedoHandler } from "./GlobalUndoRedoHandler";
 import PresentationEditor from "../editor/presentation-editor";
+import { PresentModeHeader } from "../dashboard/PresentModeHeader";
 
 interface PresentationSlidesViewProps {
-  handleSlideChange: (value: TElement[], index: number) => void;
   isGeneratingPresentation: boolean;
 }
 
 export const PresentationSlidesView = ({
-  handleSlideChange,
   isGeneratingPresentation,
 }: PresentationSlidesViewProps) => {
-  const {
-    currentSlideIndex,
-    isPresenting,
-    nextSlide,
-    previousSlide,
-    setShouldShowExitHeader,
-  } = usePresentationState();
+  const currentSlideIndex = usePresentationState((s) => s.currentSlideIndex);
+  const isPresenting = usePresentationState((s) => s.isPresenting);
+  const nextSlide = usePresentationState((s) => s.nextSlide);
+  const previousSlide = usePresentationState((s) => s.previousSlide);
+  const setShouldShowExitHeader = usePresentationState(
+    (s) => s.setShouldShowExitHeader
+  );
+  const currentPresentationTitle = usePresentationState(
+    (s) => s.currentPresentationTitle
+  );
+  const shouldShowExitHeader = usePresentationState(
+    (s) => s.shouldShowExitHeader
+  );
   const { items, sensors, handleDragEnd } = usePresentationSlides();
   // Use the slide change watcher to automatically save changes
   useSlideChangeWatcher({ debounceDelay: 600 });
@@ -56,6 +59,8 @@ export const PresentationSlidesView = ({
   // Handle showing header on mouse move
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
+      if (!isPresenting) return; // Only show header when in presentation mode
+
       if (event.clientY < 100) {
         setShouldShowExitHeader(true);
       } else {
@@ -65,7 +70,7 @@ export const PresentationSlidesView = ({
 
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [isPresenting]);
 
   return (
     <DndContext
@@ -74,13 +79,24 @@ export const PresentationSlidesView = ({
       onDragEnd={handleDragEnd}
     >
       <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        <DndProvider backend={HTML5Backend}>
+        <PresentModeHeader
+          presentationTitle={currentPresentationTitle}
+          showHeader={isPresenting && shouldShowExitHeader}
+        />
+        <PlateController>
+          <GlobalUndoRedoHandler />
+
           {items.map((slide, index) => (
             <div
               key={slide.id}
-              className={`slide-wrapper slide-wrapper-${index}`}
+              className={`slide-wrapper slide-wrapper-${index} w-full`}
             >
-              <SlideContainer index={index} id={slide.id}>
+              <SlideContainer
+                index={index}
+                id={slide.id}
+                slideWidth={slide.width}
+                slidesCount={items.length}
+              >
                 <div
                   className={cn(
                     `slide-container-${index}`,
@@ -96,31 +112,14 @@ export const PresentationSlidesView = ({
                     id={slide.id}
                     autoFocus={index === currentSlideIndex}
                     slideIndex={index}
-                    onChange={(value) => handleSlideChange(value, index)}
                     isGenerating={isGeneratingPresentation}
                     readOnly={isPresenting}
                   />
                 </div>
               </SlideContainer>
-
-              {/* Create preview directly in the markup */}
-              <SlidePreviewRenderer slideIndex={index} slideId={slide.id}>
-                <PresentationEditor
-                  initialContent={slide}
-                  className="min-h-[300px] border"
-                  id={`preview-${slide.id}`}
-                  isPreview={true}
-                  readOnly={true}
-                  slideIndex={index}
-                  onChange={() => {
-                    // Test
-                  }}
-                  isGenerating={isGeneratingPresentation}
-                />
-              </SlidePreviewRenderer>
             </div>
           ))}
-        </DndProvider>
+        </PlateController>
       </SortableContext>
     </DndContext>
   );

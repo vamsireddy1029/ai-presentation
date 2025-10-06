@@ -1,26 +1,27 @@
-import {
-  Edit,
-  Image,
-  Trash2,
-  LayoutGrid,
-  ArrowUpFromLine,
-  FoldVertical,
-  PanelRight,
-  PanelLeft,
-  PanelTop,
-  AlignCenter,
-  MoveHorizontal,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ColorPicker from "@/components/ui/color-picker";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { usePresentationState } from "@/states/presentation-state";
 import { cn } from "@/lib/utils";
+import { usePresentationState } from "@/states/presentation-state";
+import {
+  AlignCenter,
+  ArrowUpFromLine,
+  Edit,
+  FoldVertical,
+  Image,
+  ImageIcon,
+  LayoutGrid,
+  MoveHorizontal,
+  PanelLeft,
+  PanelRight,
+  PanelTop,
+  Trash2,
+} from "lucide-react";
 import { type LayoutType } from "../utils/parser";
-import ColorPicker from "@/components/ui/color-picker";
 
 interface SlideEditPopoverProps {
   index: number;
@@ -34,7 +35,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
     updates: Partial<{
       layoutType: LayoutType;
       bgColor: string;
-      width: "M" | "L";
+      width: "S" | "M" | "L";
       alignment: ContentAlignment;
       rootImage?: {
         query: string;
@@ -70,7 +71,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
   };
 
   const handleImageDelete = () => {
-    updateSlide({ rootImage: undefined });
+    updateSlide({ rootImage: { ...currentSlide?.rootImage!, url: undefined } });
   };
 
   return (
@@ -205,6 +206,17 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
               >
                 <PanelRight className="h-4 w-4"></PanelRight>
               </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className={cn(
+                  "h-6 w-6 border-zinc-800 bg-zinc-900",
+                  currentLayout === "background" && "bg-blue-600"
+                )}
+                onClick={() => updateSlide({ layoutType: "background" })}
+              >
+                <ImageIcon className="h-4 w-4"></ImageIcon>
+              </Button>
             </div>
           </div>
 
@@ -215,6 +227,17 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
               <span className="text-sm text-zinc-200">Card width</span>
             </div>
             <div className="flex gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "h-6 border-zinc-800 bg-zinc-900 px-2",
+                  currentWidth === "S" && "bg-blue-600"
+                )}
+                onClick={() => updateSlide({ width: "S" })}
+              >
+                S
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

@@ -1,5 +1,5 @@
-import { RefreshCw } from "lucide-react";
 import { usePresentationState } from "@/states/presentation-state";
+import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 export function PromptInput() {

@@ -1,31 +1,10 @@
 "use client";
-
-import { useState } from "react";
+import { fetchPresentations } from "@/app/_actions/presentation/fetchPresentations";
 import {
-  Clock,
-  ChevronRight,
-  Star,
-  Pencil,
-  Trash2,
-  MoreHorizontal,
-  Calendar,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { usePresentationState } from "@/states/presentation-state";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  deletePresentations,
+  getPresentationContent,
+  updatePresentationTitle,
+} from "@/app/_actions/presentation/presentationActions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,28 +15,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
-
 import { cn } from "@/lib/utils";
+import { usePresentationState } from "@/states/presentation-state";
 import { type BaseDocument } from "@prisma/client";
-import { fetchPresentations } from "@/app/_actions/presentation/fetchPresentations";
 import {
-  deletePresentations,
-  getPresentationContent,
-  updatePresentationTitle,
-} from "@/app/_actions/presentation/presentationActions";
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
-  addToFavorites,
-  removeFromFavorites,
-} from "@/app/_actions/presentation/toggleFavorite";
-
-type PresentationDocument = BaseDocument & {
-  presentation: {
-    id: string;
-    content: unknown;
-    theme: string;
-  } | null;
-};
+  Calendar,
+  ChevronRight,
+  Clock,
+  MoreHorizontal,
+  Pencil,
+  Star,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export function RecentPresentations() {
   const router = useRouter();
@@ -141,50 +128,7 @@ export function RecentPresentations() {
     },
   });
 
-  const { mutate: favoriteMutation } = useMutation({
-    mutationFn: async (id: string) => {
-      // Try to add to favorites first
-      const result = await addToFavorites(id);
-      if (result.error === "Document is already in favorites") {
-        // If already favorited, remove from favorites
-        return removeFromFavorites(id);
-      }
-      return result;
-    },
-    onSuccess: async (result) => {
-      if (!result.success) {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to update favorites",
-        });
-        return;
-      }
-
-      await queryClient.invalidateQueries({
-        queryKey: ["documents", "favorites"],
-      });
-      await queryClient.invalidateQueries({
-        queryKey: ["presentations-all"],
-      });
-
-      toast({
-        title: "Success",
-        description: "Favorite updated successfully",
-      });
-    },
-    onError: () => {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update favorites",
-      });
-    },
-  });
-
-  const handlePresentationClick = async (
-    presentation: PresentationDocument
-  ) => {
+  const handlePresentationClick = async (presentation: BaseDocument) => {
     try {
       setIsNavigating(presentation.id);
       setCurrentPresentation(presentation.id, presentation.title);
@@ -280,10 +224,6 @@ export function RecentPresentations() {
     renameMutation({ id, currentTitle });
   };
 
-  const handleFavorite = (id: string) => {
-    favoriteMutation(id);
-  };
-
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString(undefined, {
       month: "short",
@@ -325,9 +265,10 @@ export function RecentPresentations() {
               className="relative aspect-video bg-muted"
               onClick={() => handlePresentationClick(presentation)}
             >
-              {presentation.thumbnailUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+              {presentation.thumbnailUrl || presentation.thumbnailUrl ? (
+                <Image
+                  height={200}
+                  width={300}
                   src={presentation.thumbnailUrl}
                   alt={presentation.title || "Presentation thumbnail"}
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -383,13 +324,6 @@ export function RecentPresentations() {
                   >
                     <Pencil className="mr-2 h-4 w-4" />
                     Rename
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleFavorite(presentation.id)}
-                    className="cursor-pointer"
-                  >
-                    <Star className="mr-2 h-4 w-4" />
-                    Add to favorites
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleDelete(presentation.id)}

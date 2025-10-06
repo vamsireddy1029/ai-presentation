@@ -1,14 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/** biome-ignore-all lint/suspicious/noExplicitAny: This is a valid use case */
 import React from "react";
 
-import { useEditorRef } from "@udecode/plate/react";
+import { useEditorRef } from "platejs/react";
 
-import { DRAG_ITEM_BLOCK } from "@udecode/plate-dnd";
-import { useDndNode, type UseDndNodeOptions } from "./useDndNode";
-import { type ConnectDragSource } from "react-dnd";
+import { DRAG_ITEM_BLOCK } from "@platejs/dnd";
+import { type UseDndNodeOptions, useDndNode } from "./useDndNode";
+
 export type DraggableState = {
+  /**
+   * True when the element is ready to be dragged (e.g., on mouse down but
+   * before drag starts)
+   */
+  isAboutToDrag: boolean;
   isDragging: boolean;
   /** The ref of the draggable element */
+  nodeRef: React.RefObject<HTMLDivElement | null>;
+  /** The ref of the multiple preview element */
   previewRef: React.RefObject<HTMLDivElement | null>;
   /** The ref of the draggable handle */
   handleRef: (
@@ -21,30 +28,31 @@ export type DraggableState = {
 };
 
 export const useDraggable = (props: UseDndNodeOptions): DraggableState => {
-  const { type = DRAG_ITEM_BLOCK, onDropHandler } = props;
+  const { type = DRAG_ITEM_BLOCK, orientation, onDropHandler } = props;
 
   const editor = useEditorRef();
 
   const nodeRef = React.useRef<HTMLDivElement>(null);
 
-  if (!editor.plugins.dnd)
-    return {
-      isDragging: false,
-      previewRef: nodeRef,
-      handleRef: nodeRef as unknown as ConnectDragSource,
-    };
+  const multiplePreviewRef = React.useRef<HTMLDivElement>(null);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { dragRef, isDragging } = useDndNode({
+  if (!editor.plugins.dnd) return {} as any;
+
+  // biome-ignore lint/correctness/useHookAtTopLevel: We don't need to calculate anything when props are not available
+  const { dragRef, isAboutToDrag, isDragging } = useDndNode({
+    multiplePreviewRef,
     nodeRef,
     type,
     onDropHandler,
+    orientation,
     ...props,
   });
 
   return {
+    isAboutToDrag,
     isDragging,
-    previewRef: nodeRef,
+    nodeRef,
+    previewRef: multiplePreviewRef,
     handleRef: dragRef,
   };
 };

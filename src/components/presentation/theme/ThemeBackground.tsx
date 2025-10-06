@@ -1,11 +1,11 @@
-import { usePresentationState } from "@/states/presentation-state";
-import { useTheme } from "next-themes";
 import {
-  themes,
   setThemeVariables,
+  themes,
   type ThemeProperties,
 } from "@/lib/presentation/themes";
 import { cn } from "@/lib/utils";
+import { usePresentationState } from "@/states/presentation-state";
+import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 interface ThemeBackgroundProps {
@@ -14,7 +14,9 @@ interface ThemeBackgroundProps {
 }
 
 export function ThemeBackground({ className, children }: ThemeBackgroundProps) {
-  const { theme: presentationTheme, customThemeData } = usePresentationState();
+  const presentationTheme = usePresentationState((s) => s.theme);
+  const customThemeData = usePresentationState((s) => s.customThemeData);
+  const config = usePresentationState((s) => s.config);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
@@ -65,24 +67,26 @@ export function ThemeBackground({ className, children }: ThemeBackgroundProps) {
 
   const colors = isDark ? currentTheme.colors.dark : currentTheme.colors.light;
 
-  // Create more sophisticated gradient styles based on theme colors
-  const gradientStyle = {
-    background: isDark
-      ? `
+  // Create gradient styles based on theme colors, allow override
+  const defaultBackground = isDark
+    ? `
         radial-gradient(circle at 10% 10%, ${colors.primary}20 0%, transparent 30%),
         radial-gradient(circle at 90% 20%, ${colors.accent}20 0%, transparent 40%),
         radial-gradient(circle at 50% 80%, ${colors.secondary}15 0%, transparent 50%),
         ${colors.background}
       `
-      : `
+    : `
         radial-gradient(circle at 10% 10%, ${colors.primary}15 0%, transparent 30%),
         radial-gradient(circle at 90% 20%, ${colors.accent}15 0%, transparent 40%),
         radial-gradient(circle at 50% 80%, ${colors.secondary}10 0%, transparent 50%),
         ${colors.background}
-      `,
+      `;
+
+  const gradientStyle = {
+    background: config.backgroundOverride ?? defaultBackground,
     transition: currentTheme.transitions.default,
     color: isDark ? colors.text : colors.text,
-  };
+  } as React.CSSProperties;
 
   return (
     <div

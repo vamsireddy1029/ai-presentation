@@ -1,9 +1,9 @@
-import { useState, useEffect, memo } from "react";
+import ProseMirrorEditor from "@/components/prose-mirror/ProseMirrorEditor";
+import { cn } from "@/lib/utils";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import ProseMirrorEditor from "@/components/prose-mirror/ProseMirrorEditor";
+import { memo, useEffect, useState } from "react";
 
 interface OutlineItemProps {
   id: string;
@@ -61,7 +61,7 @@ export const OutlineItem = memo(function OutlineItem({
       style={style}
       className={cn(
         "group flex items-center gap-4 rounded-md bg-muted p-4",
-        isDragging && "opacity-50"
+        isDragging && "opacity-50",
       )}
     >
       <div

@@ -1,18 +1,21 @@
-import { LangChainAdapter } from "ai";
-import { NextResponse } from "next/server";
 import { auth } from "@/server/auth";
-import { ChatOpenAI } from "@langchain/openai";
+import { StringOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
-import { StringOutputParser } from "@langchain/core/output_parsers";
+import { LangChainAdapter } from "ai";
+import { NextResponse } from "next/server";
+import { ChatOpenAI } from "@langchain/openai";
+// Use AI SDK types for proper type safety
 
 interface SlidesRequest {
-  title: string; // Presentation title
+  title: string; // Generated presentation title
+  prompt: string; // Original user prompt/request
   outline: string[]; // Array of main topics with markdown content
   language: string; // Language to use for the slides
   tone: string; // Style for image queries (optional)
+  searchResults?: Array<{ query: string; results: unknown[] }>; // Search results for context
 }
-
+// TODO: Add table and chart to the available layouts
 const slidesTemplate = `
 You are an expert presentation designer.Your task is to create an engaging presentation in XML format.
 ## CORE REQUIREMENTS
@@ -24,10 +27,15 @@ You are an expert presentation designer.Your task is to create an engaging prese
 
 ## PRESENTATION DETAILS
 - Title: {TITLE}
+- User's Original Request: {PROMPT}
+- Current Date: {CURRENT_DATE}
 - Outline (for reference only): {OUTLINE_FORMATTED}
 - Language: {LANGUAGE}
 - Tone: {TONE}
 - Total Slides: {TOTAL_SLIDES}
+
+## RESEARCH CONTEXT
+{SEARCH_RESULTS}
 
 ## PRESENTATION STRUCTURE
 \`\`\`xml
@@ -53,7 +61,7 @@ Vary the layout attribute in each SECTION tag to control image placement:
 Use all three layouts throughout the presentation for visual variety.
 
 ## AVAILABLE LAYOUTS
-Choose ONE different layout for each slide:
+Choose ONE different layout for each slide (use these exact XML tags so our parser recognizes them):
 
 1. COLUMNS: For comparisons
 \`\`\`xml
@@ -66,8 +74,8 @@ Choose ONE different layout for each slide:
 2. BULLETS: For key points
 \`\`\`xml
 <BULLETS>
-  <DIV><H3>Main Point</H3><P>Description</P></DIV>
-  <DIV><P>Second point with details</P></DIV>
+  <DIV><H3>Main Point 1 </H3><P>Description</P></DIV>
+  <DIV><H3>Main Point 2 </H3><P>Second point with details</P></DIV>
 </BULLETS>
 \`\`\`
 
@@ -98,6 +106,15 @@ Choose ONE different layout for each slide:
 </ARROWS>
 \`\`\`
 
+5b. ARROW-VERTICAL: For vertical step-by-step flows (preferred for linear phases)
+\`\`\`xml
+<ARROW-VERTICAL>
+  <DIV><H3>Discover</H3><P>Research & requirements.</P></DIV>
+  <DIV><H3>Design</H3><P>UX & architecture.</P></DIV>
+  <DIV><H3>Deliver</H3><P>Build, test, deploy.</P></DIV>
+</ARROW-VERTICAL>
+\`\`\`
+
 6. TIMELINE: For chronological progression
 \`\`\`xml
 <TIMELINE>
@@ -125,18 +142,8 @@ Choose ONE different layout for each slide:
 </STAIRCASE>
 \`\`\`
 
-9. CHART: For data visualization
-\`\`\`xml
-<CHART charttype="vertical-bar">
-  <TABLE>
-    <TR><TD type="label"><VALUE>Q1</VALUE></TD><TD type="data"><VALUE>45</VALUE></TD></TR>
-    <TR><TD type="label"><VALUE>Q2</VALUE></TD><TD type="data"><VALUE>72</VALUE></TD></TR>
-    <TR><TD type="label"><VALUE>Q3</VALUE></TD><TD type="data"><VALUE>89</VALUE></TD></TR>
-  </TABLE>
-</CHART>
-\`\`\`
 
-10. IMAGES: Most slides needs at least one
+9. IMAGES: Most slides needs at least one
 \`\`\`xml
 <!-- Good image queries (detailed, specific): -->
 <IMG query="futuristic smart city with renewable energy infrastructure and autonomous vehicles in morning light" />
@@ -145,6 +152,63 @@ Choose ONE different layout for each slide:
 
 <!-- NOT just: "city", "microchip", "team meeting" -->
 \`\`\`
+
+10. BOXES: For simple information tiles
+\`\`\`xml
+<BOXES>
+  <DIV><H3>Speed</H3> <P>Faster delivery cycles.</P></DIV>
+  <DIV><H3>Quality</H3> <P>Automated testing & reviews.</P></DIV>
+  <DIV><H3>Security</H3> <P>Shift-left security practices.</P></DIV>
+</BOXES>
+\`\`\`
+
+11. COMPARE: For side-by-side comparison
+\`\`\`xml
+<COMPARE>
+  <DIV><H3>Solution A</H3> <LI>Features 1</LI> <LI>Features 2</LI></DIV>
+  <DIV><H3>Solution B</H3> <LI>Features 3</LI> <LI>Features 4</LI></DIV>
+</COMPARE>
+\`\`\`
+
+12. BEFORE-AFTER: For transformation snapshots
+\`\`\`xml
+<BEFORE-AFTER>
+  <DIV><H3>Before</H3> <P>Manual processes, scattered data.</P></DIV>
+  <DIV><H3>After</H3> <P>Automated workflows, unified insights.</P></DIV>
+</BEFORE-AFTER>
+\`\`\`
+
+13. PROS-CONS: For trade-offs
+\`\`\`xml
+<PROS-CONS>
+  <PROS><H3>Pros</H3> <LI>Pros 1</LI> <LI>Pros 2</LI>  </PROS>
+  <CONS><H3>Cons</H3> <LI>Cons 1</LI> <LI>Cons 2</LI></CONS>
+</PROS-CONS>
+\`\`\`
+
+14. TABLE: For tabular data. Preferred over other layouts for tabular data. It can also be used to do comparisons.
+\`\`\`xml
+<TABLE>
+  <TR><TH>Header 1</TH><TH>Header 2</TH></TR>
+  <TR><TD>Data 1</TD><TD>Data 2</TD></TR>
+</TABLE>
+\`\`\`
+
+15. CHARTS: Use compact DATA rows (no TABLEs). The AI must emit \`<DATA>\` items inside \`<CHART>\`.
+\`\`\`xml
+<!-- Label/Value charts: bar, pie, line, area, radar -->
+<CHART charttype="bar|pie|line|area|radar">
+  <DATA><LABEL>Q1</LABEL><VALUE>24</VALUE></DATA>
+  <DATA><LABEL>Q2</LABEL><VALUE>36</VALUE></DATA>
+</CHART>
+
+<!-- Scatter charts: provide numeric X and Y per DATA point -->
+<CHART charttype="scatter">
+  <DATA><X>1</X><Y>2</Y></DATA>
+  <DATA><X>3</X><Y>5</Y></DATA>
+</CHART>
+\`\`\`
+
 
 ## CONTENT EXPANSION STRATEGY
 For each outline point:
@@ -163,13 +227,13 @@ For each outline point:
    - Use each layout (left, right, vertical) at least twice
    - Don't use the same layout more than twice in a row
 
+7. Use only the XML tags shown above. Do not invent new tags or attributes.
+
 Now create a complete XML presentation with {TOTAL_SLIDES} slides that significantly expands on the outline.
 `;
 
 const model = new ChatOpenAI({
-  modelName: "gpt-4o-mini",
-  temperature: 0.7,
-  streaming: true,
+  model: "gpt-4o-mini",
 });
 
 export async function POST(req: Request) {
@@ -179,15 +243,57 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { title, outline, language, tone } =
-      (await req.json()) as SlidesRequest;
+    const {
+      title,
+      prompt: userPrompt,
+      outline,
+      language,
+      tone,
+      searchResults,
+    } = (await req.json()) as SlidesRequest;
 
     if (!title || !outline || !Array.isArray(outline) || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
+
+    // Format search results
+    let searchResultsText = "No research data available.";
+    if (searchResults && searchResults.length > 0) {
+      const searchData = searchResults
+        .map((searchItem, index: number) => {
+          const query = searchItem.query || `Search ${index + 1}`;
+          const results = Array.isArray(searchItem.results)
+            ? searchItem.results
+            : [];
+
+          if (results.length === 0) return "";
+
+          const formattedResults = results
+            .map((result: unknown) => {
+              const resultObj = result as Record<string, unknown>;
+              return `- ${resultObj.title || "No title"}\n  ${resultObj.content || "No content"}\n  ${resultObj.url || "No URL"}`;
+            })
+            .join("\n");
+
+          return `**Search Query ${index + 1}:** ${query}\n**Results:**\n${formattedResults}\n---`;
+        })
+        .filter(Boolean)
+        .join("\n\n");
+
+      if (searchData) {
+        searchResultsText = `The following research was conducted during outline generation:\n\n${searchData}`;
+      }
+    }
+
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
     const prompt = PromptTemplate.fromTemplate(slidesTemplate);
     const stringOutputParser = new StringOutputParser();
@@ -195,10 +301,13 @@ export async function POST(req: Request) {
 
     const stream = await chain.stream({
       TITLE: title,
+      PROMPT: userPrompt || "No specific prompt provided",
+      CURRENT_DATE: currentDate,
       LANGUAGE: language,
       TONE: tone,
       OUTLINE_FORMATTED: outline.join("\n\n"),
       TOTAL_SLIDES: outline.length, // +2 for title and conclusion slides
+      SEARCH_RESULTS: searchResultsText,
     });
 
     return LangChainAdapter.toDataStreamResponse(stream);
@@ -206,7 +315,7 @@ export async function POST(req: Request) {
     console.error("Error in presentation generation:", error);
     return NextResponse.json(
       { error: "Failed to generate presentation slides" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

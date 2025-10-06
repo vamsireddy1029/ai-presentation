@@ -1,24 +1,29 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
-import { nanoid } from "nanoid";
+import { type PlateSlide } from "@/components/presentation/utils/parser";
 import { usePresentationState } from "@/states/presentation-state";
 import {
+  KeyboardSensor,
+  PointerSensor,
   useSensor,
   useSensors,
-  PointerSensor,
-  KeyboardSensor,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { sortableKeyboardCoordinates, arrayMove } from "@dnd-kit/sortable";
-import { type PlateSlide } from "@/components/presentation/utils/parser";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { nanoid } from "nanoid";
+import { useCallback, useMemo } from "react";
 
 interface SlideWithId extends PlateSlide {
   id: string;
 }
 
 export function usePresentationSlides() {
-  const { slides, setSlides, isPresenting } = usePresentationState();
+  const slides = usePresentationState((s) => s.slides);
+  const setSlides = usePresentationState((s) => s.setSlides);
+  const setCurrentSlideIndex = usePresentationState(
+    (s) => s.setCurrentSlideIndex
+  );
+  const isPresenting = usePresentationState((s) => s.isPresenting);
 
   // Configure DnD sensors
   const sensors = useSensors(
@@ -34,7 +39,8 @@ export function usePresentationSlides() {
 
   // Ensure all slides have IDs
   const items = useMemo(
-    () => slides.map((slide) => ({ ...slide, id: slide?.id ?? nanoid() })),
+    () =>
+      slides.map((slide) => (slide?.id ? slide : { ...slide, id: nanoid() })),
     [slides]
   );
 
@@ -54,9 +60,11 @@ export function usePresentationSlides() {
         );
         const newArray = arrayMove(items, oldIndex, newIndex);
         setSlides([...newArray]);
+        // Update current slide index to the new position
+        setCurrentSlideIndex(newIndex);
       }
     },
-    [items, isPresenting, setSlides]
+    [items, isPresenting, setSlides, setCurrentSlideIndex]
   );
 
   // Scroll to a slide by index

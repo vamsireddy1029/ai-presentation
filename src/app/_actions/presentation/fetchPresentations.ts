@@ -36,9 +36,6 @@ export async function fetchPresentations(page = 0) {
     },
     take: ITEMS_PER_PAGE,
     skip: skip,
-    include: {
-      presentation: true,
-    },
   });
 
   const hasMore = items.length === ITEMS_PER_PAGE;

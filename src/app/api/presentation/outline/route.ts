@@ -1,9 +1,9 @@
-import { LangChainAdapter } from "ai";
-import { NextResponse } from "next/server";
 import { auth } from "@/server/auth";
-import { ChatOpenAI } from "@langchain/openai";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
+import { ChatOpenAI } from "@langchain/openai";
+import { LangChainAdapter } from "ai";
+import { NextResponse } from "next/server";
 
 interface OutlineRequest {
   prompt: string;
@@ -12,14 +12,18 @@ interface OutlineRequest {
 }
 
 const outlineTemplate = `Given the following presentation topic and requirements, generate a structured outline with {numberOfCards} main topics in markdown format.
-The outline should be in {language}.
+The outline should be in {language} language and it very important.
 
+Current Date: {currentDate}
 Topic: {prompt}
 
-Generate exactly {numberOfCards} main topics that would make for an engaging and well-structured presentation. 
-Format the response as markdown content, with each topic as a heading followed by 2-3 bullet points.
+First, generate an appropriate title for the presentation, then create exactly {numberOfCards} main topics that would make for an engaging and well-structured presentation.
+
+Format the response starting with the title in XML tags, followed by markdown content with each topic as a heading and 2-3 bullet points.
 
 Example format:
+<TITLE>Your Generated Presentation Title Here</TITLE>
+
 # First Main Topic
 - Key point about this topic
 - Another important aspect
@@ -47,11 +51,7 @@ Make sure the topics:
 
 const outlineChain = RunnableSequence.from([
   PromptTemplate.fromTemplate(outlineTemplate),
-  new ChatOpenAI({
-    modelName: "gpt-4o-mini",
-    temperature: 0.7,
-    streaming: true,
-  }),
+  new ChatOpenAI({ model: "gpt-4o-mini" }),
 ]);
 
 export async function POST(req: Request) {
@@ -67,14 +67,37 @@ export async function POST(req: Request) {
     if (!prompt || !numberOfCards || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 },
+        { status: 400 }
       );
     }
+    const languageMap: Record<string, string> = {
+      "en-US": "English (US)",
+      pt: "Portuguese",
+      es: "Spanish",
+      fr: "French",
+      de: "German",
+      it: "Italian",
+      ja: "Japanese",
+      ko: "Korean",
+      zh: "Chinese",
+      ru: "Russian",
+      hi: "Hindi",
+      ar: "Arabic",
+    };
+
+    const actualLanguage = languageMap[language] ?? language; // Fallback to the original if not found
+    const currentDate = new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 
     const stream = await outlineChain.stream({
       prompt,
       numberOfCards,
-      language,
+      language: actualLanguage,
+      currentDate,
     });
 
     return LangChainAdapter.toDataStreamResponse(stream);
@@ -82,7 +105,7 @@ export async function POST(req: Request) {
     console.error("Error in outline generation:", error);
     return NextResponse.json(
       { error: "Failed to generate outline" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

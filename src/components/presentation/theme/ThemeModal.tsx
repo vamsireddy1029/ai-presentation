@@ -1,25 +1,25 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import {
+  getPublicCustomThemes,
+  getUserCustomThemes,
+} from "@/app/_actions/presentation/theme-actions";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
   DialogContent,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  getUserCustomThemes,
-  getPublicCustomThemes,
-} from "@/app/_actions/presentation/theme-actions";
-import { ThemeCreator } from "./ThemeCreator";
-import { usePresentationState } from "@/states/presentation-state";
-import { useTheme } from "next-themes";
-import { useQuery } from "@tanstack/react-query";
-import { type ThemeProperties } from "@/lib/presentation/themes";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { type ThemeProperties } from "@/lib/presentation/themes";
+import { usePresentationState } from "@/states/presentation-state";
+import { useQuery } from "@tanstack/react-query";
 import { Plus, X } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useState, type ReactNode } from "react";
+import { ThemeCreator } from "./ThemeCreator";
 
 // Define interfaces for the theme data
 interface CustomTheme {

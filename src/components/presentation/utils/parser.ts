@@ -1,86 +1,142 @@
-import type { TDescendant, TElement, TText } from "@udecode/plate-common";
-import { ColumnItemPlugin, ColumnPlugin } from "@udecode/plate-layout/react";
+import { ColumnItemPlugin, ColumnPlugin } from "@platejs/layout/react";
 import { nanoid } from "nanoid"; // Import nanoid for unique ID generation
+import {
+  type Descendant,
+  type TColumnElement,
+  type TColumnGroupElement,
+  type TText,
+} from "platejs";
+import {
+  type TArrowListElement,
+  type TArrowListItemElement,
+} from "../editor/plugins/arrow-plugin";
+import {
+  type TBulletGroupElement,
+  type TBulletItemElement,
+} from "../editor/plugins/bullet-plugin";
+import {
+  type TCycleGroupElement,
+  type TCycleItemElement,
+} from "../editor/plugins/cycle-plugin";
+import {
+  type TIconListElement,
+  type TIconListItemElement,
+} from "../editor/plugins/icon-list-plugin";
+import { type TIconElement } from "../editor/plugins/icon-plugin";
+import {
+  type TPyramidGroupElement,
+  type TPyramidItemElement,
+} from "../editor/plugins/pyramid-plugin";
+import {
+  type TStairGroupElement,
+  type TStairItemElement,
+} from "../editor/plugins/staircase-plugin";
+import {
+  type TTimelineGroupElement,
+  type TTimelineItemElement,
+} from "../editor/plugins/timeline-plugin";
 
-// Define a text node with generating property
-export interface GeneratingText extends TText {
-  text: string;
-  generating?: boolean;
-}
-
-// Plate element types
-export type ParagraphElement = TElement & { type: "p" };
-export type HeadingElement = TElement & {
-  type: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-};
-export type ImageElement = TElement & {
-  type: "img";
-  url: string;
-  query: string;
-};
-export type ColumnItemElement = TElement & {
-  type: typeof ColumnItemPlugin.key;
-};
-export type ColumnsElement = TElement & { type: typeof ColumnPlugin.key };
-export type BulletElement = TElement & { type: "bullet" };
-export type BulletsElement = TElement & { type: "bullets" };
-export type IconElement = TElement & {
-  type: "icon";
-  query: string;
-  name: string; // We'll keep this but use an empty string
-};
-export type IconItemElement = TElement & { type: "icon-item" };
-export type IconsElement = TElement & { type: "icons" };
-export type CycleItemElement = TElement & { type: "cycle-item" };
-export type CycleElement = TElement & { type: "cycle" };
-export type StairItemElement = TElement & { type: "stair-item" };
-export type StaircaseElement = TElement & { type: "staircase" };
-export type ChartElement = TElement & {
-  type: "chart";
-  chartType: string;
-  data: Array<{ label: string; value: number }>;
-};
-export type VisualizationItemElement = TElement & {
-  type: "visualization-item";
-};
-export type VisualizationListElement = TElement & {
-  type: "visualization-list";
-  visualizationType: "pyramid" | "arrow" | "timeline";
-};
+import {
+  type TTableCellElement,
+  type TTableElement,
+  type TTableRowElement,
+} from "platejs";
+import {
+  AREA_CHART_ELEMENT,
+  BAR_CHART_ELEMENT,
+  LINE_CHART_ELEMENT,
+  PIE_CHART_ELEMENT,
+  RADAR_CHART_ELEMENT,
+  SCATTER_CHART_ELEMENT,
+} from "../editor/lib";
+import {
+  type TBeforeAfterGroupElement,
+  type TBeforeAfterSideElement,
+} from "../editor/plugins/before-after-plugin";
+import {
+  type TBoxGroupElement,
+  type TBoxItemElement,
+} from "../editor/plugins/box-plugin";
+import { type TButtonElement } from "../editor/plugins/button-plugin";
+import {
+  type TCompareGroupElement,
+  type TCompareSideElement,
+} from "../editor/plugins/compare-plugin";
+import {
+  type TConsItemElement,
+  type TProsConsGroupElement,
+  type TProsItemElement,
+} from "../editor/plugins/pros-cons-plugin";
+import {
+  type TSequenceArrowGroupElement,
+  type TSequenceArrowItemElement,
+} from "../editor/plugins/sequence-arrow-plugin";
+import {
+  type GeneratingText,
+  type HeadingElement,
+  type ImageCropSettings,
+  type ImageElement,
+  type ParagraphElement,
+  type TChartElement,
+} from "./types";
 
 // Union type for all possible Plate elements
 export type PlateNode =
   | ParagraphElement
   | HeadingElement
   | ImageElement
-  | ColumnItemElement
-  | ColumnsElement
-  | BulletElement
-  | BulletsElement
-  | IconElement
-  | IconItemElement
-  | IconsElement
-  | CycleItemElement
-  | CycleElement
-  | StairItemElement
-  | StaircaseElement
-  | ChartElement
-  | VisualizationItemElement
-  | VisualizationListElement;
+  | TColumnElement
+  | TColumnGroupElement
+  | TBulletGroupElement
+  | TBulletItemElement
+  | TIconListItemElement
+  | TIconListElement
+  | TIconElement
+  | TCycleGroupElement
+  | TCycleItemElement
+  | TStairItemElement
+  | TStairGroupElement
+  | TPyramidGroupElement
+  | TPyramidItemElement
+  | TArrowListElement
+  | TArrowListItemElement
+  | TTimelineGroupElement
+  | TTimelineItemElement
+  | TChartElement
+  // New components
+  | TBoxGroupElement
+  | TBoxItemElement
+  | TCompareGroupElement
+  | TCompareSideElement
+  | TBeforeAfterGroupElement
+  | TBeforeAfterSideElement
+  | TProsConsGroupElement
+  | TProsItemElement
+  | TConsItemElement
+  | TSequenceArrowGroupElement
+  | TSequenceArrowItemElement
+  | TButtonElement
+  | TTableElement
+  | TTableRowElement
+  | TTableCellElement;
 
-export type LayoutType = "left" | "right" | "vertical";
+export type LayoutType = "left" | "right" | "vertical" | "background";
+export type RootImage = {
+  query: string;
+  url?: string;
+  cropSettings?: ImageCropSettings;
+  layoutType?: LayoutType;
+  size?: { w?: string; h?: number };
+};
 // Updated slide type to be a structured object instead of just an array
 export type PlateSlide = {
   id: string;
   content: PlateNode[];
-  rootImage?: {
-    query: string;
-    url?: string;
-  };
+  rootImage?: RootImage;
   layoutType?: LayoutType | undefined;
   alignment?: "start" | "center" | "end";
   bgColor?: string;
-  width?: "L" | "M";
+  width?: "S" | "M" | "L";
 };
 
 // Simple XML node interface for our parser
@@ -99,16 +155,10 @@ export class SlideParser {
   private buffer = "";
   private completedSections: string[] = [];
   private parsedSlides: PlateSlide[] = [];
-
-  // Track the total processed content to avoid reprocessing
-  private totalProcessedLength = 0;
   private lastInputLength = 0;
 
   // Map to store section identifiers to slide IDs to maintain consistency
   private sectionIdMap = new Map<string, string>();
-
-  // Keep track of the latest content for generating mark
-  private lastTextContent = "";
   private latestContent = "";
 
   /**
@@ -145,30 +195,7 @@ export class SlideParser {
     // Process completed sections
     const newSlides = this.processSections();
 
-    // Find the last text content for tracking the generating mark
-    this.lastTextContent = this.findLastTextContent(chunk);
-
     return newSlides;
-  }
-
-  /**
-   * Find the last text content that is not within a tag
-   * This is used to identify what content should have the generating mark
-   */
-  private findLastTextContent(xml: string): string {
-    // Extract the last bit of content
-    const lastTagIndex = xml.lastIndexOf("<");
-    if (lastTagIndex === -1) return xml;
-
-    // Find the last closing tag
-    const lastClosingTagIndex = xml.lastIndexOf(">");
-
-    // If we have text after the last tag, that's what's being generated
-    if (lastClosingTagIndex > lastTagIndex) {
-      return "";
-    }
-
-    return xml.substring(lastTagIndex);
   }
 
   /**
@@ -201,7 +228,6 @@ export class SlideParser {
       const finalSlides = this.processSections();
 
       // Clear the generating mark tracking for completed content
-      this.lastTextContent = "";
       this.latestContent = "";
 
       return finalSlides;
@@ -225,9 +251,7 @@ export class SlideParser {
     this.buffer = "";
     this.completedSections = [];
     this.parsedSlides = [];
-    this.totalProcessedLength = 0;
     this.lastInputLength = 0;
-    this.lastTextContent = "";
     this.latestContent = "";
     // Don't reset sectionIdMap to maintain IDs across reset calls
   }
@@ -239,18 +263,17 @@ export class SlideParser {
   public clearAllGeneratingMarks(): void {
     // Clear marks from all slides
     for (const slide of this.parsedSlides) {
-      this.clearGeneratingMarksFromNodes(slide.content as TDescendant[]);
+      this.clearGeneratingMarksFromNodes(slide.content as Descendant[]);
     }
 
     // Clear tracking state
-    this.lastTextContent = "";
     this.latestContent = "";
   }
 
   /**
    * Clear all generating marks from a tree of nodes
    */
-  private clearGeneratingMarksFromNodes(nodes: TDescendant[]): void {
+  private clearGeneratingMarksFromNodes(nodes: Descendant[]): void {
     for (const node of nodes) {
       if ("text" in node && (node as GeneratingText).generating !== undefined) {
         (node as GeneratingText).generating = undefined;
@@ -261,7 +284,7 @@ export class SlideParser {
         Array.isArray(node.children) &&
         node.children.length > 0
       ) {
-        this.clearGeneratingMarksFromNodes(node.children as TDescendant[]);
+        this.clearGeneratingMarksFromNodes(node.children as Descendant[]);
       }
     }
   }
@@ -318,7 +341,7 @@ export class SlideParser {
       const sectionEndIdx = this.buffer.indexOf("</SECTION>", sectionStartIdx);
       const nextSectionIdx = this.buffer.indexOf(
         "<SECTION",
-        sectionStartIdx + 1
+        sectionStartIdx + 1,
       );
 
       // If we found a complete section with proper ending
@@ -329,7 +352,7 @@ export class SlideParser {
         // Extract the complete section
         const completeSection = this.buffer.substring(
           sectionStartIdx,
-          sectionEndIdx + "</SECTION>".length
+          sectionEndIdx + "</SECTION>".length,
         );
 
         this.completedSections.push(completeSection);
@@ -341,7 +364,7 @@ export class SlideParser {
         // Force close the current section
         const partialSection = this.buffer.substring(
           sectionStartIdx,
-          nextSectionIdx
+          nextSectionIdx,
         );
 
         // Check if it has actual content
@@ -351,7 +374,10 @@ export class SlideParser {
           partialSection.includes("<H3>") ||
           partialSection.includes("<PYRAMID>") ||
           partialSection.includes("<ARROWS>") ||
-          partialSection.includes("<TIMELINE>")
+          partialSection.includes("<TIMELINE>") ||
+          partialSection.includes("<P>") ||
+          partialSection.includes("<ICON>") ||
+          partialSection.includes("<IMG")
         ) {
           // Add a closing tag and process it
           this.completedSections.push(partialSection + "</SECTION>");
@@ -380,7 +406,7 @@ export class SlideParser {
   private generateSectionIdentifier(sectionNode: XMLNode): string {
     // Try to find a unique heading to identify the section
     const h1Node = sectionNode.children.find(
-      (child) => child.tag.toUpperCase() === "H1"
+      (child) => child.tag.toUpperCase() === "H1",
     );
 
     // Use H1 content as a primary identifier if available
@@ -438,11 +464,10 @@ export class SlideParser {
 
     // Find the SECTION node (should be the first child of ROOT)
     const sectionNode = rootNode.children.find(
-      (child) => child.tag.toUpperCase() === "SECTION"
+      (child) => child.tag.toUpperCase() === "SECTION",
     );
 
     if (!sectionNode) {
-      console.error("No SECTION element found in the XML");
       return {
         id: nanoid(),
         content: [],
@@ -467,7 +492,7 @@ export class SlideParser {
     }
 
     // Extract layout type from SECTION attributes
-    let layoutType: LayoutType | undefined = undefined;
+    let layoutType: LayoutType | undefined;
     const layoutAttr = sectionNode.attributes.layout;
 
     if (layoutAttr) {
@@ -475,21 +500,20 @@ export class SlideParser {
       if (
         layoutAttr === "left" ||
         layoutAttr === "right" ||
-        layoutAttr === "vertical"
+        layoutAttr === "vertical" ||
+        layoutAttr === "background"
       ) {
         layoutType = layoutAttr as LayoutType;
       } else {
-        // Default to "left" if we get an invalid layout value
-        console.warn(
-          `Invalid layout type "${layoutAttr}", defaulting to "left"`
-        );
         layoutType = "left";
       }
     }
 
     // Process each child of SECTION as a separate top-level element
     const plateElements: PlateNode[] = [];
-    let rootImage: { query: string; url?: string } | undefined = undefined;
+    let rootImage:
+      | { query: string; url?: string; layoutType?: LayoutType }
+      | undefined;
 
     for (const child of sectionNode.children) {
       // Check if this is a root-level IMG
@@ -504,7 +528,7 @@ export class SlideParser {
 
           if (queryStart !== -1) {
             const afterQuery = child.originalTagContent.substring(
-              queryStart + 6
+              queryStart + 6,
             );
             if (afterQuery.length > 0) {
               const quoteChar = afterQuery[0];
@@ -519,7 +543,7 @@ export class SlideParser {
                 if (isCompleteQuery) {
                   const extractedQuery = afterQuery.substring(
                     1,
-                    closingQuoteIdx
+                    closingQuoteIdx,
                   );
 
                   // Only set rootImage if the query is valid and we don't already have one
@@ -530,6 +554,7 @@ export class SlideParser {
                   ) {
                     rootImage = {
                       query: extractedQuery,
+                      layoutType,
                       ...(url ? { url } : {}),
                     };
                   }
@@ -586,7 +611,7 @@ export class SlideParser {
       case "H6":
         return this.createHeading(
           tag.toLowerCase() as "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
-          node
+          node,
         );
 
       case "P":
@@ -599,10 +624,10 @@ export class SlideParser {
         return this.createColumns(node);
 
       case "BULLETS":
-        return this.createBullets(node);
+        return this.createBulletGroup(node);
 
       case "ICONS":
-        return this.createIcons(node);
+        return this.createIconList(node);
 
       case "CYCLE":
         return this.createCycle(node);
@@ -613,15 +638,36 @@ export class SlideParser {
       case "CHART":
         return this.createChart(node);
 
-      // Handle all visualization types with a single function
       case "ARROWS":
-        return this.createVisualization(node, "arrow");
+        return this.createArrowList(node);
+
+      // New components
+      case "BOXES":
+        return this.createBoxes(node);
+      case "COMPARE":
+        return this.createCompare(node);
+      case "BEFORE-AFTER":
+      case "BEFOREAFTER":
+        return this.createBeforeAfter(node);
+      case "PROS-CONS":
+      case "PROSCONS":
+        return this.createProsCons(node);
+      case "ARROW-VERTICAL":
+      case "ARROW_VERTICAL":
+      case "VERTICAL-ARROWS":
+      case "VERTICAL_ARROWS":
+        return this.createArrowVertical(node);
+      case "TABLE":
+        return this.createPlainTable(node);
+
+      case "BUTTON":
+        return this.createButton(node);
 
       case "PYRAMID":
-        return this.createVisualization(node, "pyramid");
+        return this.createPyramid(node);
 
       case "TIMELINE":
-        return this.createVisualization(node, "timeline");
+        return this.createTimeline(node);
 
       default:
         console.warn(`Unknown top-level tag: ${tag}`);
@@ -651,7 +697,7 @@ export class SlideParser {
     if (presentationOpenStart !== -1) {
       const presentationOpenEnd = processedXml.indexOf(
         ">",
-        presentationOpenStart
+        presentationOpenStart,
       );
       if (presentationOpenEnd !== -1) {
         // Remove the entire opening tag including attributes
@@ -688,7 +734,7 @@ export class SlideParser {
       if (presentationOpenStart !== -1) {
         const presentationOpenEnd = withoutPresentation.indexOf(
           ">",
-          presentationOpenStart
+          presentationOpenStart,
         );
         if (presentationOpenEnd !== -1) {
           // Remove the entire opening tag including attributes
@@ -915,11 +961,11 @@ export class SlideParser {
    */
   private createHeading(
     level: "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
-    node: XMLNode
+    node: XMLNode,
   ): HeadingElement {
     return {
       type: level,
-      children: this.getTextDescendants(node),
+      children: this.getTexDescendants(node),
     } as HeadingElement;
   }
 
@@ -929,75 +975,8 @@ export class SlideParser {
   private createParagraph(node: XMLNode): ParagraphElement {
     return {
       type: "p",
-      children: this.getTextDescendants(node),
+      children: this.getTexDescendants(node),
     } as ParagraphElement;
-  }
-
-  /**
-   * Helper function to validate if a query is complete and valid
-   */
-  private isValidQuery(query: string, originalTagContent?: string): boolean {
-    if (!query) return false;
-
-    // Clean query by removing any XML tags
-    let cleanedQuery = query;
-
-    // If query contains XML fragments, clean or truncate it
-    if (
-      cleanedQuery.includes("<") ||
-      cleanedQuery.includes(">") ||
-      cleanedQuery.includes("</") ||
-      cleanedQuery.includes("/>") ||
-      cleanedQuery.includes("SECTION")
-    ) {
-      // For ICON tags, try to clean the query instead of rejecting it
-      const tagIndex = Math.min(
-        cleanedQuery.includes("<") ? cleanedQuery.indexOf("<") : Infinity,
-        cleanedQuery.includes(">") ? cleanedQuery.indexOf(">") : Infinity,
-        cleanedQuery.includes("</") ? cleanedQuery.indexOf("</") : Infinity,
-        cleanedQuery.includes("/>") ? cleanedQuery.indexOf("/>") : Infinity,
-        cleanedQuery.includes("SECTION")
-          ? cleanedQuery.indexOf("SECTION")
-          : Infinity
-      );
-
-      cleanedQuery = cleanedQuery.substring(0, tagIndex).trim();
-
-      // If after cleaning, the query is too short, reject it
-      if (cleanedQuery.length < 3) {
-        return false;
-      }
-    }
-
-    // Check if the tag has proper quotes around the query attribute
-    if (originalTagContent) {
-      const queryStart = originalTagContent.indexOf("query=");
-      if (queryStart !== -1) {
-        const afterQuery = originalTagContent.substring(queryStart + 6);
-        if (afterQuery.length > 0) {
-          const quoteChar = afterQuery[0];
-          if (
-            (quoteChar === '"' || quoteChar === "'") &&
-            !afterQuery.includes(quoteChar, 1)
-          ) {
-            // Found opening quote but no closing quote - incomplete
-            return false;
-          }
-        }
-      }
-    }
-
-    // Special handling for obviously incomplete queries
-    if (
-      cleanedQuery.length < 3 ||
-      cleanedQuery.endsWith("...") ||
-      cleanedQuery.endsWith(",") ||
-      !cleanedQuery.trim()
-    ) {
-      return false;
-    }
-
-    return true;
   }
 
   /**
@@ -1056,15 +1035,16 @@ export class SlideParser {
   /**
    * Create a columns layout element
    */
-  private createColumns(node: XMLNode): ColumnsElement {
-    const columnItems: ColumnItemElement[] = [];
+  private createColumns(node: XMLNode): TColumnGroupElement {
+    const columnItems: TColumnElement[] = [];
 
     // Process DIV children as column items
     for (const child of node.children) {
       if (child.tag.toUpperCase() === "DIV") {
-        const columnItem: ColumnItemElement = {
+        const columnItem: TColumnElement = {
           type: ColumnItemPlugin.key,
-          children: this.processNodes(child.children) as TDescendant[],
+          children: this.processNodes(child.children) as Descendant[],
+          width: "M",
         };
         columnItems.push(columnItem);
       }
@@ -1073,7 +1053,7 @@ export class SlideParser {
     return {
       type: ColumnPlugin.key,
       children: columnItems,
-    } as ColumnsElement;
+    } as TColumnGroupElement;
   }
 
   /**
@@ -1106,7 +1086,7 @@ export class SlideParser {
       // If multiple children, wrap in a paragraph
       return {
         type: "p",
-        children: children as TDescendant[],
+        children: children as Descendant[],
       } as ParagraphElement;
     }
   }
@@ -1114,15 +1094,15 @@ export class SlideParser {
   /**
    * Create a bullets layout element
    */
-  private createBullets(node: XMLNode): BulletsElement {
-    const bulletItems: BulletElement[] = [];
+  private createBulletGroup(node: XMLNode): TBulletGroupElement {
+    const bulletItems: TBulletItemElement[] = [];
 
     // Process DIV children as bullet items
     for (const child of node.children) {
       if (child.tag.toUpperCase() === "DIV") {
-        const bulletItem: BulletElement = {
+        const bulletItem: TBulletItemElement = {
           type: "bullet",
-          children: this.processNodes(child.children) as TDescendant[],
+          children: this.processNodes(child.children) as Descendant[],
         };
         bulletItems.push(bulletItem);
       }
@@ -1131,21 +1111,21 @@ export class SlideParser {
     return {
       type: "bullets",
       children: bulletItems,
-    } as BulletsElement;
+    } as TBulletGroupElement;
   }
 
   /**
    * Create an icons layout element
    */
-  private createIcons(node: XMLNode): IconsElement {
-    const iconItems: IconItemElement[] = [];
+  private createIconList(node: XMLNode): TIconListElement {
+    const iconItems: TIconListItemElement[] = [];
 
     // Process DIV children as icon items
     for (const child of node.children) {
       if (child.tag.toUpperCase() === "DIV") {
         // Look for icon name in ICON child
         let query = "";
-        const children: TDescendant[] = [];
+        const children: Descendant[] = [];
 
         for (const iconChild of child.children) {
           if (iconChild.tag.toUpperCase() === "ICON") {
@@ -1160,12 +1140,14 @@ export class SlideParser {
               rawQuery.includes("SECTION")
             ) {
               const tagIndex = Math.min(
-                rawQuery.includes("<") ? rawQuery.indexOf("<") : Infinity,
-                rawQuery.includes(">") ? rawQuery.indexOf(">") : Infinity,
-                rawQuery.includes("</") ? rawQuery.indexOf("</") : Infinity,
-                rawQuery.includes("SECTION")
+                rawQuery.indexOf("<") !== -1 ? rawQuery.indexOf("<") : Infinity,
+                rawQuery.indexOf(">") !== -1 ? rawQuery.indexOf(">") : Infinity,
+                rawQuery.indexOf("</") !== -1
+                  ? rawQuery.indexOf("</")
+                  : Infinity,
+                rawQuery.indexOf("SECTION") !== -1
                   ? rawQuery.indexOf("SECTION")
-                  : Infinity
+                  : Infinity,
               );
 
               rawQuery = rawQuery.substring(0, tagIndex).trim();
@@ -1178,7 +1160,7 @@ export class SlideParser {
           } else {
             const processedChild = this.processNode(iconChild);
             if (processedChild) {
-              children.push(processedChild as TDescendant);
+              children.push(processedChild as Descendant);
             }
           }
         }
@@ -1189,10 +1171,10 @@ export class SlideParser {
             type: "icon",
             query: query,
             children: [{ text: "" } as TText],
-          } as IconElement);
+          } as TIconElement);
         }
 
-        const iconItem: IconItemElement = {
+        const iconItem: TIconListItemElement = {
           type: "icon-item",
           children,
         };
@@ -1203,21 +1185,21 @@ export class SlideParser {
     return {
       type: "icons",
       children: iconItems,
-    } as IconsElement;
+    } as TIconListElement;
   }
 
   /**
    * Create a cycle layout element
    */
-  private createCycle(node: XMLNode): CycleElement {
-    const cycleItems: CycleItemElement[] = [];
+  private createCycle(node: XMLNode): TCycleGroupElement {
+    const cycleItems: TCycleItemElement[] = [];
 
     // Process DIV children as cycle items
     for (const child of node.children) {
       if (child.tag.toUpperCase() === "DIV") {
-        const cycleItem: CycleItemElement = {
+        const cycleItem: TCycleItemElement = {
           type: "cycle-item",
-          children: this.processNodes(child.children) as TDescendant[],
+          children: this.processNodes(child.children) as Descendant[],
         };
         cycleItems.push(cycleItem);
       }
@@ -1226,21 +1208,21 @@ export class SlideParser {
     return {
       type: "cycle",
       children: cycleItems,
-    } as CycleElement;
+    } as TCycleGroupElement;
   }
 
   /**
    * Create a staircase layout element
    */
-  private createStaircase(node: XMLNode): StaircaseElement {
-    const stairItems: StairItemElement[] = [];
+  private createStaircase(node: XMLNode): TStairGroupElement {
+    const stairItems: TStairItemElement[] = [];
 
     // Process DIV children as stair items
     for (const child of node.children) {
       if (child.tag.toUpperCase() === "DIV") {
-        const stairItem: StairItemElement = {
+        const stairItem: TStairItemElement = {
           type: "stair-item",
-          children: this.processNodes(child.children) as TDescendant[],
+          children: this.processNodes(child.children) as Descendant[],
         };
         stairItems.push(stairItem);
       }
@@ -1249,89 +1231,25 @@ export class SlideParser {
     return {
       type: "staircase",
       children: stairItems,
-    } as StaircaseElement;
+    } as TStairGroupElement;
   }
 
   /**
-   * Create a chart element
+   * Create an arrows layout element
    */
-  private createChart(node: XMLNode): ChartElement {
-    // Extract chart type from attributes
-    const chartType = node.attributes.charttype ?? "horizontal-bar";
+  private createArrowList(node: XMLNode): TArrowListElement {
+    const arrowItems: TArrowListItemElement[] = [];
 
-    // Find TABLE child
-    const tableNode = node.children.find(
-      (child) => child.tag.toUpperCase() === "TABLE"
-    );
-
-    // Parse chart data from TR rows
-    const chartData: Array<{ label: string; value: number }> = [];
-
-    if (tableNode) {
-      // Find TR children
-      const trNodes = tableNode.children.filter(
-        (child) => child.tag.toUpperCase() === "TR"
-      );
-
-      for (const trNode of trNodes) {
-        // Find TD children
-        const tdNodes = trNode.children.filter(
-          (child) => child.tag.toUpperCase() === "TD"
-        );
-
-        let label = "";
-        let value = 0;
-
-        // Extract label and value from TD nodes
-        for (const tdNode of tdNodes) {
-          const tdType = tdNode.attributes.type ?? "";
-
-          // Find VALUE child
-          const valueNode = tdNode.children.find(
-            (child) => child.tag.toUpperCase() === "VALUE"
-          );
-
-          if (valueNode) {
-            if (tdType === "label") {
-              label = valueNode.content.trim();
-            } else if (tdType === "data") {
-              value = parseFloat(valueNode.content.trim()) || 0;
-            }
-          }
-        }
-
-        chartData.push({ label, value });
-      }
-    }
-
-    return {
-      type: "chart",
-      chartType,
-      data: chartData,
-      children: [{ text: "" } as TText],
-    } as ChartElement;
-  }
-
-  /**
-   * Create a visualization list element (handles arrows, pyramid, timeline)
-   */
-  private createVisualization(
-    node: XMLNode,
-    visualizationType: "arrow" | "pyramid" | "timeline"
-  ): VisualizationListElement {
-    // Process DIV children as visualization items
-    const visualizationItems: VisualizationItemElement[] = [];
-
-    // Process DIV children
+    // Process DIV children as arrow items
     for (const child of node.children) {
       if (child.tag.toUpperCase() === "DIV") {
         // Process all elements inside the DIV
-        const itemChildren: TDescendant[] = [];
+        const itemChildren: Descendant[] = [];
 
         for (const divChild of child.children) {
           const processedChild = this.processNode(divChild);
           if (processedChild) {
-            itemChildren.push(processedChild as TDescendant);
+            itemChildren.push(processedChild as Descendant);
           }
         }
 
@@ -1347,33 +1265,416 @@ export class SlideParser {
           } as TText);
         }
 
-        // Create a visualization-item element
+        // Create an arrow-item element
         if (itemChildren.length > 0) {
-          visualizationItems.push({
-            type: "visualization-item",
+          arrowItems.push({
+            type: "arrow-item",
             children: itemChildren,
-          } as VisualizationItemElement);
+          } as TArrowListItemElement);
         }
       }
     }
 
     return {
-      type: "visualization-list",
-      visualizationType,
+      type: "arrows",
       children:
-        visualizationItems.length > 0
-          ? visualizationItems
-          : [{ text: "" } as TText],
-    } as VisualizationListElement;
+        arrowItems.length > 0
+          ? arrowItems
+          : ([{ text: "" } as TText] as Descendant[]),
+    } as TArrowListElement;
+  }
+
+  /**
+   * Create a pyramid layout element
+   */
+  private createPyramid(node: XMLNode): TPyramidGroupElement {
+    const pyramidItems: TPyramidItemElement[] = [];
+
+    // Process DIV children as pyramid items
+    for (const child of node.children) {
+      if (child.tag.toUpperCase() === "DIV") {
+        const pyramidItem: TPyramidItemElement = {
+          type: "pyramid-item",
+          children: this.processNodes(child.children) as Descendant[],
+        };
+        pyramidItems.push(pyramidItem);
+      }
+    }
+
+    return {
+      type: "pyramid",
+      children: pyramidItems,
+    } as TPyramidGroupElement;
+  }
+
+  /**
+   * Create Boxes layout
+   */
+  private createBoxes(node: XMLNode): TBoxGroupElement {
+    const items: TBoxItemElement[] = [];
+    for (const child of node.children) {
+      if (child.tag.toUpperCase() === "DIV") {
+        items.push({
+          type: "box-item",
+          children: this.processNodes(child.children) as Descendant[],
+        } as TBoxItemElement);
+      }
+    }
+    return { type: "boxes", children: items } as TBoxGroupElement;
+  }
+
+  /**
+   * Create Compare layout
+   */
+  private createCompare(node: XMLNode): TCompareGroupElement {
+    const sides: TCompareSideElement[] = [];
+    for (const child of node.children) {
+      if (child.tag.toUpperCase() === "DIV") {
+        sides.push({
+          type: "compare-side",
+          children: this.processNodes(child.children) as Descendant[],
+        } as TCompareSideElement);
+      }
+    }
+    return { type: "compare", children: sides } as TCompareGroupElement;
+  }
+
+  /**
+   * Create Before/After layout
+   */
+  private createBeforeAfter(node: XMLNode): TBeforeAfterGroupElement {
+    const sides: TBeforeAfterSideElement[] = [];
+    for (const child of node.children) {
+      if (child.tag.toUpperCase() === "DIV") {
+        sides.push({
+          type: "before-after-side",
+          children: this.processNodes(child.children) as Descendant[],
+        } as TBeforeAfterSideElement);
+      }
+    }
+    return {
+      type: "before-after",
+      children: sides,
+    } as TBeforeAfterGroupElement;
+  }
+
+  /**
+   * Create Pros/Cons layout
+   */
+  private createProsCons(node: XMLNode): TProsConsGroupElement {
+    const children: (TProsItemElement | TConsItemElement)[] = [];
+    for (const child of node.children) {
+      if (child.tag.toUpperCase() === "PROS") {
+        children.push({
+          type: "pros-item",
+          children: this.processNodes(child.children) as Descendant[],
+        } as TProsItemElement);
+      } else if (child.tag.toUpperCase() === "CONS") {
+        children.push({
+          type: "cons-item",
+          children: this.processNodes(child.children) as Descendant[],
+        } as TConsItemElement);
+      } else if (child.tag.toUpperCase() === "DIV") {
+        // fallback: alternating divs pros/cons
+        const isPros = children.length % 2 === 0;
+        children.push({
+          type: isPros ? "pros-item" : "cons-item",
+          children: this.processNodes(child.children) as Descendant[],
+        } as unknown as TProsItemElement);
+      }
+    }
+    return { type: "pros-cons", children } as TProsConsGroupElement;
+  }
+
+  /**
+   * Create Vertical Arrow layout
+   */
+  private createArrowVertical(node: XMLNode): TSequenceArrowGroupElement {
+    const items: TSequenceArrowItemElement[] = [];
+    for (const child of node.children) {
+      if (child.tag.toUpperCase() === "DIV") {
+        items.push({
+          type: "arrow-vertical-item",
+          children: this.processNodes(child.children) as Descendant[],
+        } as TSequenceArrowItemElement);
+      }
+    }
+    return {
+      type: "arrow-vertical",
+      children: items,
+    } as TSequenceArrowGroupElement;
+  }
+
+  /**
+   * Create a simple Table (rows/cells) layout
+   */
+  private createPlainTable(node: XMLNode): TTableElement {
+    const rows: TTableRowElement[] = [];
+
+    const parseRow = (rowNode: XMLNode): void => {
+      if (!rowNode) return;
+      const cells: TTableCellElement[] = [];
+
+      for (const cellNode of rowNode.children) {
+        const tag = cellNode.tag.toUpperCase();
+        if (tag === "TD" || tag === "TH") {
+          const isCellHeader = tag === "TH";
+
+          const cellChildren = this.processNodes(
+            cellNode.children,
+          ) as Descendant[];
+
+          const colSpanStr =
+            cellNode.attributes.colspan || cellNode.attributes.colSpan;
+          const rowSpanStr =
+            cellNode.attributes.rowspan || cellNode.attributes.rowSpan;
+
+          const colSpanVal = colSpanStr ? parseInt(colSpanStr, 10) : undefined;
+          const rowSpanVal = rowSpanStr ? parseInt(rowSpanStr, 10) : undefined;
+
+          const background =
+            cellNode.attributes.background || cellNode.attributes.bg;
+
+          const extraProps: {
+            colSpan?: number;
+            rowSpan?: number;
+            background?: string;
+          } = {};
+          if (colSpanVal && colSpanVal > 1) extraProps.colSpan = colSpanVal;
+          if (rowSpanVal && rowSpanVal > 1) extraProps.rowSpan = rowSpanVal;
+          if (background) extraProps.background = background;
+
+          const cell = {
+            type: isCellHeader ? "th" : "td",
+            ...extraProps,
+            children:
+              cellChildren.length > 0
+                ? cellChildren
+                : ([
+                    {
+                      type: "p",
+                      children: [
+                        { text: cellNode.content?.trim?.() || "" } as TText,
+                      ],
+                    },
+                  ] as unknown as Descendant[]),
+          } as unknown as TTableCellElement;
+
+          cells.push(cell);
+        }
+      }
+
+      rows.push({ type: "tr", children: cells } as TTableRowElement);
+    };
+
+    // Handle explicit THEAD
+    for (const child of node.children) {
+      const tag = child.tag.toUpperCase();
+      if (tag === "THEAD") {
+        for (const row of child.children) {
+          const rowTag = row.tag.toUpperCase();
+          if (rowTag === "TR" || rowTag === "ROW") parseRow(row);
+        }
+      }
+    }
+
+    // Gather remaining rows from TBODY or direct TRs
+    const directRows: XMLNode[] = [];
+    const bodyRows: XMLNode[] = [];
+    for (const child of node.children) {
+      const tag = child.tag.toUpperCase();
+      if (tag === "TBODY") {
+        for (const row of child.children) {
+          const rowTag = row.tag.toUpperCase();
+          if (rowTag === "TR" || rowTag === "ROW") bodyRows.push(row);
+        }
+      } else if (tag === "TR" || tag === "ROW") {
+        directRows.push(child);
+      }
+    }
+
+    const remainingRows: XMLNode[] = [...directRows, ...bodyRows];
+
+    for (let i = 0; i < remainingRows.length; i++) {
+      const row = remainingRows[i]!;
+      parseRow(row);
+    }
+
+    return { type: "table", children: rows } as TTableElement;
+  }
+  /**
+   * Create a timeline layout element
+   */
+  private createTimeline(node: XMLNode): TTimelineGroupElement {
+    const timelineItems: TTimelineItemElement[] = [];
+
+    // Process DIV children as timeline items
+    for (const child of node.children) {
+      if (child.tag.toUpperCase() === "DIV") {
+        // Process all elements inside the DIV
+        const itemChildren: Descendant[] = [];
+
+        for (const divChild of child.children) {
+          const processedChild = this.processNode(divChild);
+          if (processedChild) {
+            itemChildren.push(processedChild as Descendant);
+          }
+        }
+
+        // If no children were processed but we have text content, add it
+        if (itemChildren.length === 0 && child.content.trim()) {
+          const contentText = child.content.trim();
+          itemChildren.push({
+            text: contentText,
+            // Add generating mark if this is at the end of the buffer
+            ...(this.shouldHaveGeneratingMark(contentText)
+              ? { generating: true }
+              : {}),
+          } as TText);
+        }
+
+        // Create a timeline-item element
+        if (itemChildren.length > 0) {
+          timelineItems.push({
+            type: "timeline-item",
+            children: itemChildren,
+          } as TTimelineItemElement);
+        }
+      }
+    }
+
+    return {
+      type: "timeline",
+      children:
+        timelineItems.length > 0
+          ? timelineItems
+          : ([{ text: "" } as TText] as Descendant[]),
+    } as TTimelineGroupElement;
+  }
+
+  /**
+   * Create a chart element
+   */
+  private createChart(node: XMLNode): PlateNode {
+    // Extract chart type from attributes
+    const chartType = (node.attributes.charttype || "bar").toLowerCase();
+
+    // Support DATA-based rows first
+    const dataNodes = node.children.filter(
+      (child) => child.tag.toUpperCase() === "DATA",
+    );
+
+    let parsedData: unknown[] | null = null;
+
+    if (dataNodes.length > 0) {
+      if (chartType === "scatter") {
+        const points: Array<{ x: number; y: number }> = [];
+        for (const d of dataNodes) {
+          // Prefer child tags <X>, <Y>; fallback to attributes x,y
+          const xNode = d.children.find((c) => c.tag.toUpperCase() === "X");
+          const yNode = d.children.find((c) => c.tag.toUpperCase() === "Y");
+          const xAttr = d.attributes.x;
+          const yAttr = d.attributes.y;
+          const x = parseFloat(xNode?.content?.trim?.() || xAttr || "0");
+          const y = parseFloat(yNode?.content?.trim?.() || yAttr || "0");
+          points.push({
+            x: Number.isNaN(x) ? 0 : x,
+            y: Number.isNaN(y) ? 0 : y,
+          });
+        }
+        parsedData = points;
+      } else {
+        const rows: Array<{ label: string; value: number }> = [];
+        for (const d of dataNodes) {
+          // Prefer child tags <LABEL> and <VALUE>; fallback to attributes
+          const labelNode = d.children.find(
+            (c) => c.tag.toUpperCase() === "LABEL",
+          );
+          const valueNode = d.children.find(
+            (c) => c.tag.toUpperCase() === "VALUE",
+          );
+          const labelAttr = d.attributes.label ?? d.attributes.name ?? "";
+          const valueAttr = d.attributes.value ?? "";
+          const label = (
+            labelNode?.content?.trim?.() ||
+            labelAttr ||
+            ""
+          ).toString();
+          const valueParsed = parseFloat(
+            (valueNode?.content?.trim?.() || valueAttr || "0").toString(),
+          );
+          rows.push({
+            label,
+            value: Number.isNaN(valueParsed) ? 0 : valueParsed,
+          });
+        }
+        parsedData = rows;
+      }
+    }
+
+    // No legacy TABLE support; if no DATA rows were found, return empty dataset
+    if (parsedData === null) parsedData = [];
+
+    const typeMap: Record<string, string> = {
+      pie: PIE_CHART_ELEMENT,
+      bar: BAR_CHART_ELEMENT,
+      area: AREA_CHART_ELEMENT,
+      radar: RADAR_CHART_ELEMENT,
+      scatter: SCATTER_CHART_ELEMENT,
+      line: LINE_CHART_ELEMENT,
+    };
+
+    const elementType = typeMap[chartType] || BAR_CHART_ELEMENT;
+
+    // Return node matching our individual chart plugins
+    return {
+      type: elementType,
+      data: parsedData,
+      children: [{ text: "" } as TText],
+    } as PlateNode;
+  }
+
+  /**
+   * Create a non-functional themed Button element from <BUTTON>
+   */
+  private createButton(node: XMLNode): PlateNode {
+    const variantAttr = (node.attributes.variant || "").toLowerCase();
+    const sizeAttr = (node.attributes.size || "").toLowerCase();
+
+    const variant: "filled" | "outline" | "ghost" | undefined =
+      variantAttr === "filled" ||
+      variantAttr === "outline" ||
+      variantAttr === "ghost"
+        ? (variantAttr as "filled" | "outline" | "ghost")
+        : undefined;
+
+    const size: "sm" | "md" | "lg" | undefined =
+      sizeAttr === "sm" || sizeAttr === "md" || sizeAttr === "lg"
+        ? (sizeAttr as "sm" | "md" | "lg")
+        : undefined;
+
+    const children = this.processNodes(node.children) as Descendant[];
+    const fallback = node.content?.trim?.() || "";
+    const finalChildren =
+      children.length > 0
+        ? children
+        : ([{ text: fallback }] as unknown as Descendant[]);
+
+    return {
+      type: "button",
+      ...(variant ? { variant } : {}),
+      ...(size ? { size } : {}),
+      children: finalChildren,
+    } as unknown as PlateNode;
   }
 
   /**
    * Extract text descendants from a node, processing child nodes recursively
    * with improved whitespace handling
    */
-  private getTextDescendants(node: XMLNode): TDescendant[] {
+  private getTexDescendants(node: XMLNode): Descendant[] {
     // Start with any text content in this node
-    const descendants: TDescendant[] = [];
+    const descendants: Descendant[] = [];
 
     // Preserve the node's text content, don't trim
     if (node.content) {
@@ -1403,7 +1704,7 @@ export class SlideParser {
           ...(this.shouldHaveGeneratingMark(content)
             ? { generating: true }
             : {}),
-        } as TDescendant);
+        } as Descendant);
       } else if (childTag === "I" || childTag === "EM") {
         const content = this.getTextContent(child, false);
         descendants.push({
@@ -1413,7 +1714,7 @@ export class SlideParser {
           ...(this.shouldHaveGeneratingMark(content)
             ? { generating: true }
             : {}),
-        } as TDescendant);
+        } as Descendant);
       } else if (childTag === "U") {
         const content = this.getTextContent(child, false);
         descendants.push({
@@ -1423,7 +1724,7 @@ export class SlideParser {
           ...(this.shouldHaveGeneratingMark(content)
             ? { generating: true }
             : {}),
-        } as TDescendant);
+        } as Descendant);
       } else if (childTag === "S" || childTag === "STRIKE") {
         const content = this.getTextContent(child, false);
         descendants.push({
@@ -1433,19 +1734,19 @@ export class SlideParser {
           ...(this.shouldHaveGeneratingMark(content)
             ? { generating: true }
             : {}),
-        } as TDescendant);
+        } as Descendant);
       }
       // For other elements, recursively process them
       else {
         const processedChild = this.processNode(child);
         if (processedChild) {
-          descendants.push(processedChild as TDescendant);
+          descendants.push(processedChild as Descendant);
         }
       }
     }
 
     // Clean up empty text nodes and combine adjacent text nodes with same formatting
-    const cleanedDescendants: TDescendant[] = [];
+    const cleanedDescendants: Descendant[] = [];
 
     for (const descendant of descendants) {
       // Skip completely empty text nodes
@@ -1485,11 +1786,38 @@ export class SlideParser {
   private processNodes(nodes: XMLNode[]): PlateNode[] {
     const plateNodes: PlateNode[] = [];
 
-    for (const node of nodes) {
+    // Scan through nodes to group consecutive LI tags into a single generic list (Plate list) group
+    for (let i = 0; i < nodes.length; ) {
+      const node = nodes[i];
+      if (!node) {
+        i += 1;
+        continue;
+      }
+      const tag = node.tag.toUpperCase();
+
+      // Group consecutive <LI> siblings into Plate list items (unordered by default)
+      if (tag === "LI") {
+        const liNodes: XMLNode[] = [];
+        let j = i;
+        while (j < nodes.length) {
+          const candidate = nodes[j];
+          if (!candidate) break;
+          if (candidate.tag.toUpperCase() !== "LI") break;
+          liNodes.push(candidate);
+          j += 1;
+        }
+        const listItems = this.createListItemsFromLiNodes(liNodes);
+        for (const item of listItems) plateNodes.push(item);
+        i = j;
+        continue;
+      }
+
+      // Default: process normally
       const processedNode = this.processNode(node);
       if (processedNode) {
         plateNodes.push(processedNode);
       }
+      i += 1;
     }
 
     return plateNodes;
@@ -1510,7 +1838,7 @@ export class SlideParser {
       case "H6":
         return this.createHeading(
           tag.toLowerCase() as "h1" | "h2" | "h3" | "h4" | "h5" | "h6",
-          node
+          node,
         );
 
       case "P":
@@ -1528,10 +1856,10 @@ export class SlideParser {
         return this.processDiv(node);
 
       case "BULLETS":
-        return this.createBullets(node);
+        return this.createBulletGroup(node);
 
       case "ICONS":
-        return this.createIcons(node);
+        return this.createIconList(node);
 
       case "CYCLE":
         return this.createCycle(node);
@@ -1542,20 +1870,26 @@ export class SlideParser {
       case "CHART":
         return this.createChart(node);
 
-      // Handle visualization tags with a single function
       case "ARROWS":
-        return this.createVisualization(node, "arrow");
+        return this.createArrowList(node);
+
+      case "LI":
+        // Fallback: single Plate list item (unordered by default)
+        return this.createListItemsFromLiNodes([node])[0] ?? null;
 
       case "PYRAMID":
-        return this.createVisualization(node, "pyramid");
+        return this.createPyramid(node);
 
       case "TIMELINE":
-        return this.createVisualization(node, "timeline");
+        return this.createTimeline(node);
 
       case "ICON":
         // Skip processing ICON tags directly - they should be processed by their parent
         // This prevents incomplete icons from being processed
         return null;
+
+      case "BUTTON":
+        return this.createButton(node);
 
       default:
         // For unknown tags, try to process children
@@ -1566,7 +1900,7 @@ export class SlideParser {
           if (children.length > 0) {
             return {
               type: "p",
-              children: children as TDescendant[],
+              children: children as Descendant[],
             } as ParagraphElement;
           }
         }
@@ -1574,6 +1908,46 @@ export class SlideParser {
         // If no children to process, return null
         return null;
     }
+  }
+
+  /**
+   * Convert one or more <LI> nodes into Plate list paragraph elements
+   */
+  private createListItemsFromLiNodes(
+    liNodes: XMLNode[],
+    isOrdered = false,
+  ): ParagraphElement[] {
+    const items: ParagraphElement[] = [];
+
+    for (const li of liNodes) {
+      // Process LI children; if none, use text content
+      let itemChildren = this.processNodes(li.children) as Descendant[];
+      const contentText = li.content?.trim?.() ?? "";
+
+      if ((!itemChildren || itemChildren.length === 0) && contentText) {
+        itemChildren = [
+          {
+            text: contentText,
+            ...(this.shouldHaveGeneratingMark(contentText)
+              ? { generating: true }
+              : {}),
+          } as TText,
+        ] as unknown as Descendant[];
+      }
+
+      if (!itemChildren || itemChildren.length === 0) {
+        itemChildren = [{ text: "" } as TText] as unknown as Descendant[];
+      }
+
+      items.push({
+        type: "p",
+        children: itemChildren,
+        indent: 1,
+        listStyleType: isOrdered ? "decimal" : "disc",
+      } as unknown as ParagraphElement);
+    }
+
+    return items;
   }
 }
 

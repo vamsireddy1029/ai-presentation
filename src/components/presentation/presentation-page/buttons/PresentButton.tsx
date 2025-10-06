@@ -1,16 +1,18 @@
 "use client";
-import { Play, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { usePresentationState } from "@/states/presentation-state";
 import { cn } from "@/lib/utils";
+import { usePresentationState } from "@/states/presentation-state";
+import { Play, X } from "lucide-react";
 
 export function PresentButton() {
-  const {
-    isPresenting,
-    setIsPresenting,
-    isGeneratingPresentation,
-    isGeneratingOutline,
-  } = usePresentationState();
+  const isPresenting = usePresentationState((s) => s.isPresenting);
+  const setIsPresenting = usePresentationState((s) => s.setIsPresenting);
+  const isGeneratingPresentation = usePresentationState(
+    (s) => s.isGeneratingPresentation,
+  );
+  const isGeneratingOutline = usePresentationState(
+    (s) => s.isGeneratingOutline,
+  );
 
   // Check if generation is in progress
   const isGenerating = isGeneratingPresentation || isGeneratingOutline;
@@ -22,7 +24,7 @@ export function PresentButton() {
         isPresenting
           ? "bg-red-600 text-white hover:bg-red-700"
           : "bg-purple-600 text-white hover:bg-purple-700",
-        isGenerating && "cursor-not-allowed opacity-70"
+        isGenerating && "cursor-not-allowed opacity-70",
       )}
       onClick={() => !isGenerating && setIsPresenting(!isPresenting)}
       disabled={isGenerating}

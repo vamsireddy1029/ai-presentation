@@ -148,7 +148,7 @@ const config = {
   },
   plugins: [
     require("tailwindcss-animate"),
-    require("tailwindcss-scrollbar"),
+    require("tailwind-scrollbar"),
     require("@tailwindcss/typography"),
     require("tailwind-scrollbar-hide"),
   ],
