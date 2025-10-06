@@ -15,11 +15,11 @@ import { usePresentationState } from "@/states/presentation-state";
 import "@/styles/presentation.css";
 import { type TElement } from "platejs";
 import { type PlateNode, type PlateSlide } from "../utils/parser";
+import ImageGenerationModel from "./custom-elements/image-generation-model";
 import RootImage from "./custom-elements/root-image";
 import LayoutImageDrop from "./dnd/components/LayoutImageDrop";
 import { presentationPlugins } from "./plugins";
 import PresentationEditorStaticView from "./presentation-editor-static";
-import ImageGenerationModel from "./custom-elements/image-generation-model";
 
 function slideSignature(slide?: PlateSlide): string {
   try {
@@ -60,7 +60,7 @@ const PresentationEditor = React.memo(
   }: PresentationEditorProps) => {
     const isPresenting = usePresentationState((s) => s.isPresenting);
     const setCurrentSlideIndex = usePresentationState(
-      (s) => s.setCurrentSlideIndex
+      (s) => s.setCurrentSlideIndex,
     );
     const editor = usePlateEditor({
       plugins: presentationPlugins,
@@ -100,7 +100,7 @@ const PresentationEditor = React.memo(
           setSlides(updatedSlides);
         }
       },
-      []
+      [],
     );
 
     const debouncedOnChange = debounce(
@@ -111,7 +111,7 @@ const PresentationEditor = React.memo(
         handleSlideChange(value, index);
       },
       100,
-      { maxWait: 200 }
+      { maxWait: 200 },
     );
 
     // Cleanup debounce on unmount
@@ -134,7 +134,7 @@ const PresentationEditor = React.memo(
             initialContent?.layoutType === "vertical" && "flex-col-reverse",
             initialContent?.layoutType === "left" && "flex-row-reverse",
             initialContent?.layoutType === "background" && "flex-col",
-            "presentation-slide"
+            "presentation-slide",
           )}
           style={{
             borderRadius: "var(--presentation-border-radius, 0.5rem)",
@@ -181,7 +181,7 @@ const PresentationEditor = React.memo(
                   (readOnly || isGenerating) && "px-16",
                   initialContent?.alignment === "start" && "justify-start",
                   initialContent?.alignment === "center" && "justify-center",
-                  initialContent?.alignment === "end" && "justify-end"
+                  initialContent?.alignment === "end" && "justify-end",
                 )}
                 id={id}
                 autoFocus={autoFocus && !readOnly}
@@ -230,7 +230,7 @@ const PresentationEditor = React.memo(
     if (prev.slideIndex !== next.slideIndex) return false;
     // Intentionally ignore function prop identity (onChange) differences
     return true;
-  }
+  },
 );
 
 PresentationEditor.displayName = "PresentationEditor";

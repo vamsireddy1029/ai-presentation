@@ -2,9 +2,9 @@ import { auth } from "@/server/auth";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
+import { ChatOpenAI } from "@langchain/openai";
 import { LangChainAdapter } from "ai";
 import { NextResponse } from "next/server";
-import { ChatOpenAI } from "@langchain/openai";
 // Use AI SDK types for proper type safety
 
 interface SlidesRequest {
@@ -255,7 +255,7 @@ export async function POST(req: Request) {
     if (!title || !outline || !Array.isArray(outline) || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -315,7 +315,7 @@ export async function POST(req: Request) {
     console.error("Error in presentation generation:", error);
     return NextResponse.json(
       { error: "Failed to generate presentation slides" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

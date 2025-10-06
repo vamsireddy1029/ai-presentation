@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     if (!prompt || !numberOfCards || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const languageMap: Record<string, string> = {
@@ -105,7 +105,7 @@ export async function POST(req: Request) {
     console.error("Error in outline generation:", error);
     return NextResponse.json(
       { error: "Failed to generate outline" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

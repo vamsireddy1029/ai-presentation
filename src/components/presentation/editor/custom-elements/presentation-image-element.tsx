@@ -46,7 +46,7 @@ export const PresentationImageElement = withHOC(
       const [isSheetOpen, setIsSheetOpen] = useState(false);
       const [isGenerating, setIsGenerating] = useState(false);
       const [imageUrl, setImageUrl] = useState<string | undefined>(
-        props.element.url
+        props.element.url,
       );
 
       const imageSource = usePresentationState((s) => s.imageSource);
@@ -191,7 +191,7 @@ export const PresentationImageElement = withHOC(
                           focused &&
                             selected &&
                             "ring-2 ring-ring ring-offset-2",
-                          isDragging && "opacity-50"
+                          isDragging && "opacity-50",
                         )}
                         alt={props.element.query ?? ""}
                         src={imageUrl}
@@ -200,7 +200,7 @@ export const PresentationImageElement = withHOC(
                           console.error(
                             "Presentation image failed to load:",
                             e,
-                            imageUrl
+                            imageUrl,
                           );
                         }}
                         {...nodeProps}
@@ -236,6 +236,6 @@ export const PresentationImageElement = withHOC(
           />
         </>
       );
-    }
-  )
+    },
+  ),
 );

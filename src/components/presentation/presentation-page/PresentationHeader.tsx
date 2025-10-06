@@ -1,11 +1,11 @@
 "use client";
 import SideBarDropdown from "@/components/auth/Dropdown";
+import { Brain } from "@/components/ui/icons";
 import { usePresentationState } from "@/states/presentation-state";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Brain } from "@/components/ui/icons";
 
 // Import our new components
 import AllweoneText from "@/components/globals/allweone-logo";
@@ -23,11 +23,11 @@ interface PresentationHeaderProps {
 
 export default function PresentationHeader({ title }: PresentationHeaderProps) {
   const currentPresentationTitle = usePresentationState(
-    (s) => s.currentPresentationTitle
+    (s) => s.currentPresentationTitle,
   );
   const isPresenting = usePresentationState((s) => s.isPresenting);
   const currentPresentationId = usePresentationState(
-    (s) => s.currentPresentationId
+    (s) => s.currentPresentationId,
   );
   const [presentationTitle, setPresentationTitle] =
     useState<string>("Presentation");

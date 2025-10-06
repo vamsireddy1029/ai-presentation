@@ -53,7 +53,7 @@ export function GenerateImageDialogContent({
   const editor = useEditorRef();
   const [prompt, setPrompt] = useState("");
   const [selectedModel, setSelectedModel] = useState<ImageModelList>(
-    "black-forest-labs/FLUX.1-schnell-Free"
+    "black-forest-labs/FLUX.1-schnell-Free",
   );
 
   const generateImage = async () => {
@@ -82,7 +82,7 @@ export function GenerateImageDialogContent({
       toast.success("Image generated successfully!");
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : "Failed to generate image"
+        error instanceof Error ? error.message : "Failed to generate image",
       );
     } finally {
       setIsGenerating(false);

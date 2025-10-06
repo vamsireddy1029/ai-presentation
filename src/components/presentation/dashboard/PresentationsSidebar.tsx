@@ -119,7 +119,7 @@ export function PresentationsSidebar({
 
   const handleSelectAll = () => {
     selectAllPresentations(
-      allPresentations.map((presentation) => presentation.id)
+      allPresentations.map((presentation) => presentation.id),
     );
   };
 

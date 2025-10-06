@@ -9,7 +9,7 @@ export type InsertPosition = "before" | "after";
 export function useSlideOperations() {
   const setSlides = usePresentationState((s) => s.setSlides);
   const setCurrentSlideIndex = usePresentationState(
-    (s) => s.setCurrentSlideIndex
+    (s) => s.setCurrentSlideIndex,
   );
 
   const addSlide = (position: InsertPosition, index: number) => {

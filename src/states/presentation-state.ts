@@ -64,7 +64,7 @@ interface PresentationState {
   setNumSlides: (num: number) => void;
   setTheme: (
     theme: Themes | string,
-    customData?: ThemeProperties | null
+    customData?: ThemeProperties | null,
   ) => void;
   shouldShowExitHeader: boolean;
   setShouldShowExitHeader: (udpdate: boolean) => void;
@@ -76,7 +76,7 @@ interface PresentationState {
   setPresentationInput: (input: string) => void;
   setOutline: (topics: string[]) => void;
   setSearchResults: (
-    results: Array<{ query: string; results: unknown[] }>
+    results: Array<{ query: string; results: unknown[] }>,
   ) => void;
   setWebSearchEnabled: (enabled: boolean) => void;
   setImageModel: (model: ImageModelList) => void;
@@ -225,7 +225,7 @@ export const usePresentationState = create<PresentationState>((set) => ({
     set((state) => ({
       currentSlideIndex: Math.min(
         state.currentSlideIndex + 1,
-        state.slides.length - 1
+        state.slides.length - 1,
       ),
     })),
   previousSlide: () =>

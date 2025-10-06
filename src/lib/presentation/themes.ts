@@ -448,54 +448,54 @@ export function setThemeVariables(theme: ThemeProperties, isDark: boolean) {
   // Set CSS variables
   document.documentElement.style.setProperty(
     "--presentation-primary",
-    colors.primary
+    colors.primary,
   );
   document.documentElement.style.setProperty(
     "--presentation-secondary",
-    colors.secondary
+    colors.secondary,
   );
   document.documentElement.style.setProperty(
     "--presentation-accent",
-    colors.accent
+    colors.accent,
   );
   document.documentElement.style.setProperty(
     "--presentation-background",
-    colors.background
+    colors.background,
   );
   document.documentElement.style.setProperty(
     "--presentation-text",
-    colors.text
+    colors.text,
   );
   document.documentElement.style.setProperty(
     "--presentation-heading",
-    colors.heading
+    colors.heading,
   );
   document.documentElement.style.setProperty(
     "--presentation-muted",
-    colors.muted
+    colors.muted,
   );
   document.documentElement.style.setProperty(
     "--presentation-heading-font",
-    theme.fonts.heading
+    theme.fonts.heading,
   );
   document.documentElement.style.setProperty(
     "--presentation-body-font",
-    theme.fonts.body
+    theme.fonts.body,
   );
   document.documentElement.style.setProperty(
     "--presentation-border-radius",
-    theme.borderRadius
+    theme.borderRadius,
   );
   document.documentElement.style.setProperty(
     "--presentation-transition",
-    theme.transitions.default
+    theme.transitions.default,
   );
   document.documentElement.style.setProperty(
     "--presentation-card-shadow",
-    shadows.card
+    shadows.card,
   );
   document.documentElement.style.setProperty(
     "--presentation-button-shadow",
-    shadows.button
+    shadows.button,
   );
 }

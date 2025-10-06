@@ -6,12 +6,12 @@ import { GripVertical, PanelLeftOpen, PanelRightOpen } from "lucide-react";
 import { Resizable } from "re-resizable";
 import React, { useCallback, useState } from "react";
 
+import { Button } from "@/components/ui/button";
 import { usePresentationSlides } from "@/hooks/presentation/usePresentationSlides";
 import { usePresentationState } from "@/states/presentation-state";
-import { SlidePreviewCard } from "./SlidePreviewCard";
-import { Button } from "@/components/ui/button";
 import PresentationEditorStaticView from "../editor/presentation-editor-static";
 import { PlateSlide } from "../utils/parser";
+import { SlidePreviewCard } from "./SlidePreviewCard";
 
 interface SlidePreviewProps {
   onSlideClick?: (index: number) => void;
@@ -26,14 +26,14 @@ function SlidePreviewBase({
 }: SlidePreviewProps) {
   const slides = usePresentationState((s) => s.slides);
   const stateCurrentSlideIndex = usePresentationState(
-    (s) => s.currentSlideIndex
+    (s) => s.currentSlideIndex,
   );
   const setCurrentSlideIndex = usePresentationState(
-    (s) => s.setCurrentSlideIndex
+    (s) => s.setCurrentSlideIndex,
   );
   const isSidebarCollapsed = usePresentationState((s) => s.isSidebarCollapsed);
   const setIsSidebarCollapsed = usePresentationState(
-    (s) => s.setIsSidebarCollapsed
+    (s) => s.setIsSidebarCollapsed,
   );
 
   const effectiveCurrentSlideIndex =
@@ -53,14 +53,14 @@ function SlidePreviewBase({
         scrollToSlide(index);
       }
     },
-    [onSlideClick, scrollToSlide, setCurrentSlideIndex]
+    [onSlideClick, scrollToSlide, setCurrentSlideIndex],
   );
 
   const handleResize = useCallback(
     (_e: unknown, _direction: unknown, _ref: unknown, d: { width: number }) => {
       setSidebarWidth((prev) => prev + d.width);
     },
-    []
+    [],
   );
 
   return (
@@ -196,7 +196,7 @@ const MemoPreviewItem = React.memo(
     if (previewSignature(prev.slide) !== previewSignature(next.slide))
       return false;
     return true;
-  }
+  },
 );
 
 export const SlidePreview = React.memo(SlidePreviewBase);

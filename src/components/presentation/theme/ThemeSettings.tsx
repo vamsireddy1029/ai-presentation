@@ -11,8 +11,8 @@ import { type Themes, themes } from "@/lib/presentation/themes";
 import { cn } from "@/lib/utils";
 import { usePresentationState } from "@/states/presentation-state";
 import { useTheme } from "next-themes";
-import { ThemeModal } from "./ThemeModal";
 import { ImageSourceSelector } from "./ImageSourceSelector";
+import { ThemeModal } from "./ThemeModal";
 
 const PRESENTATION_STYLES = [
   { value: "professional", label: "Professional" },
@@ -62,7 +62,7 @@ export function ThemeSettings() {
                   "group relative space-y-2 rounded-lg border p-4 text-left transition-all",
                   theme === key
                     ? "border-primary bg-primary/5"
-                    : "border-muted hover:border-primary/50 hover:bg-muted/50"
+                    : "border-muted hover:border-primary/50 hover:bg-muted/50",
                 )}
                 style={{
                   borderRadius: themeOption.borderRadius,

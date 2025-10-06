@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,8 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FaGoogle } from "react-icons/fa";
+import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import { FaGoogle } from "react-icons/fa";
 
 export default function SignIn() {
   const searchParams = useSearchParams();

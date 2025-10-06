@@ -472,7 +472,7 @@ function ColorPicker({
       debounce((color: string) => {
         onChange(color);
       }, 100), // 100ms delay
-    [onChange]
+    [onChange],
   );
 
   React.useEffect(() => {
@@ -532,7 +532,7 @@ function ColorPicker({
                       type="button"
                       className={cn(
                         "h-8 w-8 rounded-full border-2 border-dashed border-gray-300 bg-white",
-                        "flex items-center justify-center transition-transform hover:scale-110"
+                        "flex items-center justify-center transition-transform hover:scale-110",
                       )}
                     >
                       <Plus className="h-4 w-4 text-gray-500" />
@@ -551,7 +551,7 @@ function ColorPicker({
                       type="button"
                       className={cn(
                         "h-8 w-8 rounded-full transition-transform hover:scale-110 focus:ring-2 focus:ring-offset-2",
-                        localColor === color.value && "ring-2 ring-offset-2"
+                        localColor === color.value && "ring-2 ring-offset-2",
                       )}
                       style={{ backgroundColor: color.value }}
                       onClick={() => handleColorChange(color.value)}

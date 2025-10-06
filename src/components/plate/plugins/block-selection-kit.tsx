@@ -56,7 +56,7 @@ export const BlockSelectionKit = [
       editor.setOption(
         BlockSelectionPlugin,
         "selectedIds",
-        new Set(ids as string[])
+        new Set(ids as string[]),
       );
       api.blockSelection.focus();
 

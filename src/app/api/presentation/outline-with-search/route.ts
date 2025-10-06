@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     if (!prompt || !numberOfCards || !language) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -130,7 +130,7 @@ export async function POST(req: Request) {
     console.error("Error in outline generation with search:", error);
     return NextResponse.json(
       { error: "Failed to generate outline with search" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

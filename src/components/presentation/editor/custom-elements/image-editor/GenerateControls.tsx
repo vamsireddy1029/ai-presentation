@@ -4,6 +4,7 @@ import {
   generateImageAction,
   type ImageModelList,
 } from "@/app/_actions/image/generate";
+import { ImageSourceSelector } from "@/components/presentation/theme/ImageSourceSelector";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,6 @@ import { type TElement } from "platejs";
 import { useEditorRef } from "platejs/react";
 import { useEffect, useState } from "react";
 import { type RootImage as RootImageType } from "../../../utils/parser";
-import { ImageSourceSelector } from "@/components/presentation/theme/ImageSourceSelector";
 
 interface GenerateControlsProps {
   element: TElement & RootImageType;
@@ -51,7 +51,7 @@ export function GenerateControls({
     try {
       const result = await generateImageAction(
         newPrompt,
-        imageModel as ImageModelList
+        imageModel as ImageModelList,
       );
       if (result.success && result.image) {
         // Update the element using the editor or global state
@@ -68,13 +68,13 @@ export function GenerateControls({
                       query: newPrompt,
                     },
                   }
-                : slide
-            )
+                : slide,
+            ),
           );
         } else {
           editor.tf.setNodes(
             { url: result.image.url, query: newPrompt },
-            { at: editor.api.findPath(element) }
+            { at: editor.api.findPath(element) },
           );
         }
       } else {
@@ -82,7 +82,7 @@ export function GenerateControls({
       }
     } catch (error) {
       setLocalError(
-        error instanceof Error ? error.message : "Failed to generate image"
+        error instanceof Error ? error.message : "Failed to generate image",
       );
     }
   };
@@ -94,7 +94,7 @@ export function GenerateControls({
     try {
       const result = await generateImageAction(
         element.query,
-        imageModel as ImageModelList
+        imageModel as ImageModelList,
       );
       if (result.success && result.image) {
         // Update the element using the editor or global state
@@ -110,13 +110,13 @@ export function GenerateControls({
                       url: result.image.url,
                     },
                   }
-                : slide
-            )
+                : slide,
+            ),
           );
         } else {
           editor.tf.setNodes(
             { url: result.image.url },
-            { at: editor.api.findPath(element) }
+            { at: editor.api.findPath(element) },
           );
         }
       } else {
@@ -124,7 +124,7 @@ export function GenerateControls({
       }
     } catch (error) {
       setLocalError(
-        error instanceof Error ? error.message : "Failed to regenerate image"
+        error instanceof Error ? error.message : "Failed to regenerate image",
       );
     }
   };

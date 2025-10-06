@@ -1,6 +1,5 @@
 import { auth } from "@/server/auth";
-import { NextResponse } from "next/server";
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
@@ -21,8 +20,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         `/auth/signin?callbackUrl=${encodeURIComponent(request.url)}`,
-        request.url
-      )
+        request.url,
+      ),
     );
   }
 

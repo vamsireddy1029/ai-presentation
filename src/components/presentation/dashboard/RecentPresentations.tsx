@@ -39,7 +39,6 @@ import {
   Clock,
   MoreHorizontal,
   Pencil,
-  Star,
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
@@ -51,7 +50,7 @@ export function RecentPresentations() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const setCurrentPresentation = usePresentationState(
-    (state) => state.setCurrentPresentation
+    (state) => state.setCurrentPresentation,
   );
   const setIsSheetOpen = usePresentationState((state) => state.setIsSheetOpen);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -138,7 +137,7 @@ export function RecentPresentations() {
 
       if (!response.success) {
         throw new Error(
-          response.message ?? "Failed to check presentation status"
+          response.message ?? "Failed to check presentation status",
         );
       }
 
@@ -280,7 +279,7 @@ export function RecentPresentations() {
                       "h-12 w-12 transition-all",
                       isNavigating === presentation.id
                         ? "animate-spin text-primary"
-                        : "text-primary/50"
+                        : "text-primary/50",
                     )}
                   />
                 </div>

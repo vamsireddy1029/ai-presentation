@@ -24,7 +24,7 @@ export function ShareButton() {
   const [shareLink, setShareLink] = useState("");
   const [copied, setCopied] = useState(false);
   const currentPresentationId = usePresentationState(
-    (s) => s.currentPresentationId
+    (s) => s.currentPresentationId,
   );
 
   const { mutate: togglePublicStatus, isPending } = useMutation({
@@ -34,7 +34,7 @@ export function ShareButton() {
       }
       const result = await togglePresentationPublicStatus(
         currentPresentationId,
-        makePublic
+        makePublic,
       );
       if (!result.success) {
         throw new Error(result.message ?? "Failed to update sharing status");
@@ -56,7 +56,7 @@ export function ShareButton() {
     },
     onError: (error) => {
       toast.error(
-        `Error: ${error instanceof Error ? error.message : "Failed to update sharing status"}`
+        `Error: ${error instanceof Error ? error.message : "Failed to update sharing status"}`,
       );
     },
   });

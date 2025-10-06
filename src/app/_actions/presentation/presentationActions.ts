@@ -70,7 +70,7 @@ export async function createPresentation({
 export async function createEmptyPresentation(
   title: string,
   theme = "default",
-  language = "en-US"
+  language = "en-US",
 ) {
   const emptyContent: { slides: PlateSlide[] } = { slides: [] };
 

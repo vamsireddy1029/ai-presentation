@@ -24,15 +24,15 @@ import {
 } from "platejs/react";
 import * as React from "react";
 
-import { useDraggable } from "@/components/presentation/editor/dnd/hooks/useDraggable";
-import { useDropLine } from "@/components/presentation/editor/dnd/hooks/useDropLine";
-import { getGridClassForElement } from "@/components/presentation/editor/lib";
 import { Button } from "@/components/plate/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/plate/ui/tooltip";
+import { useDraggable } from "@/components/presentation/editor/dnd/hooks/useDraggable";
+import { useDropLine } from "@/components/presentation/editor/dnd/hooks/useDropLine";
+import { getGridClassForElement } from "@/components/presentation/editor/lib";
 import { cn } from "@/lib/utils";
 import { MultiDndPlugin } from "../plugins/dnd-kit";
 
@@ -192,8 +192,8 @@ export function Draggable(props: PlateElementProps) {
         // path?.length === 2 && "pl-8",
         getGridClassForElement(
           editor as unknown as PlateEditor,
-          element as unknown as TElement
-        )
+          element as unknown as TElement,
+        ),
       )}
       ref={nodeRef}
     >
@@ -204,7 +204,7 @@ export function Draggable(props: PlateElementProps) {
           "after:absolute after:-inset-1 after:pointer-events-none hover:after:border hover:after:border-blue-400",
           getContainerTypes(editor).includes(element.type)
             ? "group/container"
-            : "group"
+            : "group",
         )}
       >
         {!isInTable && (
@@ -225,7 +225,7 @@ export function Draggable(props: PlateElementProps) {
                 ]) &&
                   orientation === "vertical" &&
                   "h-[1.3em]",
-                isInColumn && orientation === "vertical" && "h-4"
+                isInColumn && orientation === "vertical" && "h-4",
               )}
             >
               <div
@@ -233,7 +233,7 @@ export function Draggable(props: PlateElementProps) {
                   "slate-blockToolbar",
                   "pointer-events-auto flex items-center",
                   orientation === "horizontal" ? "mb-1" : "mr-1",
-                  isInColumn && orientation === "vertical" && "mr-1.5"
+                  isInColumn && orientation === "vertical" && "mr-1.5",
                 )}
               >
                 <Button
@@ -241,7 +241,7 @@ export function Draggable(props: PlateElementProps) {
                   variant="ghost"
                   className={cn(
                     "p-0 bg-background/50",
-                    orientation === "horizontal" ? "h-5 w-6" : "h-6 w-5"
+                    orientation === "horizontal" ? "h-5 w-6" : "h-6 w-5",
                   )}
                   data-plate-prevent-deselect
                 >
@@ -292,7 +292,7 @@ function Gutter({
   const path = usePath();
   const isSelectionAreaVisible = usePluginOption(
     BlockSelectionPlugin,
-    "isSelectionAreaVisible"
+    "isSelectionAreaVisible",
   );
 
   const selected = useSelected();
@@ -334,7 +334,7 @@ function Gutter({
           isNodeType([KEYS.placeholder, KEYS.table]) && "pb-0 pt-3",
           isInColumn && "mt-2 h-4 pt-0",
         ],
-        className
+        className,
       )}
       contentEditable={false}
     >
@@ -383,7 +383,7 @@ const DragHandle = React.memo(function DragHandle({
 
     // Process selection nodes to include list children
     const blocks = expandListItemsWithChildren(editor, selectionNodes).map(
-      ([node]) => node
+      ([node]) => node,
     );
 
     if (blockSelection.length === 0) {
@@ -494,7 +494,7 @@ const DropLine = React.memo(function DropLine({
         dropLine === "bottom" && "-bottom-px",
         dropLine === "left" && "-left-px",
         dropLine === "right" && "-right-px",
-        className
+        className,
       )}
     />
   );
@@ -502,7 +502,7 @@ const DropLine = React.memo(function DropLine({
 
 const createDragPreviewElements = (
   editor: PlateEditor,
-  blocks: TElement[]
+  blocks: TElement[],
 ): HTMLElement[] => {
   const elements: HTMLElement[] = [];
   const ids: string[] = [];
@@ -533,7 +533,7 @@ const createDragPreviewElements = (
     // Apply visual compensation for horizontal scroll
     const applyScrollCompensation = (
       original: Element,
-      cloned: HTMLElement
+      cloned: HTMLElement,
     ) => {
       const scrollLeft = original.scrollLeft;
 
@@ -606,7 +606,7 @@ const calculatePreviewTop = (
   }: {
     blocks: TElement[];
     element: TElement;
-  }
+  },
 ): number => {
   const child = editor.api.toDOMNode(element)!;
   const editable = editor.api.toDOMNode(editor)!;
@@ -615,7 +615,7 @@ const calculatePreviewTop = (
   const firstDomNode = editor.api.toDOMNode(firstSelectedChild)!;
   // Get editor's top padding
   const editorPaddingTop = Number(
-    window.getComputedStyle(editable).paddingTop.replace("px", "")
+    window.getComputedStyle(editable).paddingTop.replace("px", ""),
   );
 
   // Calculate distance from first selected node to editor top

@@ -35,7 +35,6 @@ import {
   Loader2,
   Pencil,
   Presentation,
-  Star,
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
@@ -71,7 +70,7 @@ export function PresentationItem({
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const setCurrentPresentation = usePresentationState(
-    (state) => state.setCurrentPresentation
+    (state) => state.setCurrentPresentation,
   );
 
   const { mutate: deletePresentationMutation, isPending: isDeleting } =
@@ -174,7 +173,7 @@ export function PresentationItem({
 
       if (!response.success) {
         throw new Error(
-          response.message ?? "Failed to check presentation status"
+          response.message ?? "Failed to check presentation status",
         );
       }
 
@@ -205,7 +204,7 @@ export function PresentationItem({
         className={cn(
           "group relative flex cursor-pointer items-center justify-between rounded-lg border p-3 transition-all hover:bg-accent/5",
           isSelected && "ring-2 ring-primary",
-          isLoading && "pointer-events-none opacity-70"
+          isLoading && "pointer-events-none opacity-70",
         )}
       >
         <div className="flex w-full items-center gap-3" onClick={handleClick}>
@@ -215,7 +214,7 @@ export function PresentationItem({
                 "flex h-5 w-5 items-center justify-center rounded-full border",
                 isSelected
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "bg-background"
+                  : "bg-background",
               )}
             >
               {isSelected && <Check className="h-3 w-3" />}

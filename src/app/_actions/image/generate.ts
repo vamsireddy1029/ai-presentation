@@ -1,10 +1,10 @@
 "use server";
 
-import { env } from "@/env";
-import Together from "together-ai";
-import { db } from "@/server/db";
-import { auth } from "@/server/auth";
 import { utapi } from "@/app/api/uploadthing/core";
+import { env } from "@/env";
+import { auth } from "@/server/auth";
+import { db } from "@/server/db";
+import Together from "together-ai";
 import { UTFile } from "uploadthing/server";
 
 const together = new Together({ apiKey: env.TOGETHER_AI_API_KEY });
@@ -18,7 +18,7 @@ export type ImageModelList =
 
 export async function generateImageAction(
   prompt: string,
-  model: ImageModelList = "black-forest-labs/FLUX.1-schnell-Free"
+  model: ImageModelList = "black-forest-labs/FLUX.1-schnell-Free",
 ) {
   // Get the current session
   const session = await auth();

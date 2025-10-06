@@ -1,5 +1,6 @@
 "use client";
 
+import { createEmptyPresentation } from "@/app/_actions/presentation/presentationActions";
 import { Button } from "@/components/ui/button";
 import { usePresentationState } from "@/states/presentation-state";
 import { Wand2 } from "lucide-react";
@@ -12,7 +13,6 @@ import { PresentationHeader } from "./PresentationHeader";
 import { PresentationInput } from "./PresentationInput";
 import { PresentationsSidebar } from "./PresentationsSidebar";
 import { RecentPresentations } from "./RecentPresentations";
-import { createEmptyPresentation } from "@/app/_actions/presentation/presentationActions";
 
 export function PresentationDashboard({
   sidebarSide,
@@ -51,14 +51,14 @@ export function PresentationDashboard({
       const result = await createEmptyPresentation(
         presentationInput.substring(0, 50) || "Untitled Presentation",
         theme,
-        language
+        language,
       );
 
       if (result.success && result.presentation) {
         // Set the current presentation
         setCurrentPresentation(
           result.presentation.id,
-          result.presentation.title
+          result.presentation.title,
         );
         router.push(`/presentation/generate/${result.presentation.id}`);
       } else {

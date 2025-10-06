@@ -15,7 +15,7 @@ export const env = createEnv({
     UNSPLASH_ACCESS_KEY: z.string(),
     NEXTAUTH_URL: z.preprocess(
       (str) => process.env.VERCEL_URL ?? str,
-      process.env.VERCEL ? z.string() : z.string().url()
+      process.env.VERCEL ? z.string() : z.string().url(),
     ),
     NEXTAUTH_SECRET:
       process.env.NODE_ENV === "production"

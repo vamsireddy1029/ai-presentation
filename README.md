@@ -1,8 +1,6 @@
 # ALLWEONE® AI Presentation Generator
 
-
 https://github.com/user-attachments/assets/a21dbd49-75b8-4822-bcec-a75b581d9c60
-
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)](https://nextjs.org/)

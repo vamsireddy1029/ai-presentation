@@ -1,13 +1,13 @@
 "use client";
 
+import { generateImageAction } from "@/app/_actions/image/generate";
+import { getImageFromUnsplash } from "@/app/_actions/image/unsplash";
 import { updatePresentation } from "@/app/_actions/presentation/presentationActions";
 import { usePresentationState } from "@/states/presentation-state";
 import { useChat, useCompletion } from "@ai-sdk/react";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { SlideParser } from "../utils/parser";
-import { generateImageAction } from "@/app/_actions/image/generate";
-import { getImageFromUnsplash } from "@/app/_actions/image/unsplash";
 
 function stripXmlCodeBlock(input: string): string {
   let result = input.trim();
@@ -68,7 +68,7 @@ export function PresentationGenerationManager() {
   // Function to update slides using requestAnimationFrame
   const updateSlidesWithRAF = (): void => {
     const processedPresentationCompletion = stripXmlCodeBlock(
-      presentationCompletion
+      presentationCompletion,
     );
     streamingParserRef.current.reset();
     streamingParserRef.current.parseChunk(processedPresentationCompletion);
@@ -104,7 +104,7 @@ export function PresentationGenerationManager() {
                 // Use Unsplash for stock images
                 const unsplashResult = await getImageFromUnsplash(
                   rootImage.query,
-                  rootImage.layoutType
+                  rootImage.layoutType,
                 );
                 if (unsplashResult.success && unsplashResult.imageUrl) {
                   result = { image: { url: unsplashResult.imageUrl } };
@@ -140,8 +140,8 @@ export function PresentationGenerationManager() {
                             url: result.image.url,
                           },
                         }
-                      : s
-                  )
+                      : s,
+                  ),
                 );
               } else {
                 failRootImageGeneration(slideId, "No image url returned");
@@ -161,7 +161,7 @@ export function PresentationGenerationManager() {
 
   // Function to extract title from content
   const extractTitle = (
-    content: string
+    content: string,
   ): { title: string | null; cleanContent: string } => {
     const titleMatch = content.match(/<TITLE>(.*?)<\/TITLE>/i);
     if (titleMatch?.[1]) {
@@ -230,7 +230,7 @@ export function PresentationGenerationManager() {
       // Only extract title if we haven't done it yet
       if (!titleExtractedRef.current) {
         const { title, cleanContent: extractedCleanContent } = extractTitle(
-          lastMessage.content
+          lastMessage.content,
         );
         cleanContent = extractedCleanContent;
 
@@ -386,7 +386,7 @@ export function PresentationGenerationManager() {
                 numberOfCards: numSlides,
                 language,
               },
-            }
+            },
           );
         } catch (error) {
           console.log(error);
@@ -485,7 +485,7 @@ export function PresentationGenerationManager() {
                 // Use Unsplash for stock images
                 const unsplashResult = await getImageFromUnsplash(
                   slide.rootImage!.query,
-                  slide.rootImage!.layoutType
+                  slide.rootImage!.layoutType,
                 );
                 if (unsplashResult.success && unsplashResult.imageUrl) {
                   result = { image: { url: unsplashResult.imageUrl } };
@@ -494,7 +494,7 @@ export function PresentationGenerationManager() {
                 // Use AI generation
                 result = await generateImageAction(
                   slide.rootImage!.query,
-                  imageModel
+                  imageModel,
                 );
               }
 
@@ -511,8 +511,8 @@ export function PresentationGenerationManager() {
                             url: result.image.url,
                           },
                         }
-                      : s
-                  )
+                      : s,
+                  ),
                 );
               } else {
                 failRootImageGeneration(slideId, "No image url returned");

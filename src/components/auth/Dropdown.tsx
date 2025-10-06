@@ -1,18 +1,18 @@
 "use client";
 import {
   DropdownMenu,
-  DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
   DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOut, useSession } from "next-auth/react";
-import { LogOut, User } from "lucide-react";
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { useState } from "react";
 import { ThemeToggle } from "@/provider/theme-provider";
+import { LogOut, User } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useState } from "react";
+import { Button } from "../ui/button";
 import { Skeleton } from "../ui/skeleton";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

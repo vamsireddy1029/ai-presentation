@@ -29,22 +29,22 @@ export default function PresentationPage() {
   const { resolvedTheme } = useTheme();
   const [shouldFetchData, setSetShouldFetchData] = useState(true);
   const setCurrentPresentation = usePresentationState(
-    (s) => s.setCurrentPresentation
+    (s) => s.setCurrentPresentation,
   );
   const setPresentationInput = usePresentationState(
-    (s) => s.setPresentationInput
+    (s) => s.setPresentationInput,
   );
   const setOutline = usePresentationState((s) => s.setOutline);
   const setSlides = usePresentationState((s) => s.setSlides);
   const setThumbnailUrl = usePresentationState((s) => s.setThumbnailUrl);
   const isGeneratingPresentation = usePresentationState(
-    (s) => s.isGeneratingPresentation
+    (s) => s.isGeneratingPresentation,
   );
   const setTheme = usePresentationState((s) => s.setTheme);
   const setImageModel = usePresentationState((s) => s.setImageModel);
   const setImageSource = usePresentationState((s) => s.setImageSource);
   const setPresentationStyle = usePresentationState(
-    (s) => s.setPresentationStyle
+    (s) => s.setPresentationStyle,
   );
   const currentSlideIndex = usePresentationState((s) => s.currentSlideIndex);
   const setLanguage = usePresentationState((s) => s.setLanguage);
@@ -90,7 +90,7 @@ export default function PresentationPage() {
           console.error("Error updating theme:", error);
         });
     }, 600),
-    []
+    [],
   );
 
   // Update presentation state when data is fetched
@@ -105,7 +105,7 @@ export default function PresentationPage() {
       dbThemeRef.current = presentationData.presentation?.theme ?? null;
       setCurrentPresentation(presentationData.id, presentationData.title);
       setPresentationInput(
-        presentationData.presentation?.prompt ?? presentationData.title
+        presentationData.presentation?.prompt ?? presentationData.title,
       );
 
       // Load all content from the database
@@ -207,7 +207,7 @@ export default function PresentationPage() {
 
       if (presentationData?.presentation?.imageSource) {
         setImageSource(
-          presentationData.presentation.imageSource as "ai" | "stock"
+          presentationData.presentation.imageSource as "ai" | "stock",
         );
       }
 

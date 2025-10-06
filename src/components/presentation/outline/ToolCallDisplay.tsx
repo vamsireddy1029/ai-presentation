@@ -49,7 +49,7 @@ export function ToolCallDisplay() {
           {searchResults.map((searchItem, index) => {
             // Convert our search results to the format expected by the Searched component
             const formattedResults: SearchResult[] = Array.isArray(
-              searchItem.results
+              searchItem.results,
             )
               ? searchItem.results.map((result: unknown) => {
                   const searchResult = result as Record<string, unknown>;

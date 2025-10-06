@@ -26,16 +26,16 @@ type UseRootImageActionsOptions = {
 
 export function useRootImageActions(
   slideIndex: number,
-  options: UseRootImageActionsOptions = {}
+  options: UseRootImageActionsOptions = {},
 ) {
   const { image, layoutType, slideId } = options;
 
   const setSlides = usePresentationState((s) => s.setSlides);
   const startRootImageGeneration = usePresentationState(
-    (s) => s.startRootImageGeneration
+    (s) => s.startRootImageGeneration,
   );
   const rootImageGeneration = usePresentationState(
-    (s) => s.rootImageGeneration
+    (s) => s.rootImageGeneration,
   );
   const { saveImmediately } = useDebouncedSave();
 
@@ -49,11 +49,11 @@ export function useRootImageActions(
 
   const computedGen = useMemo(
     () => (slideId ? rootImageGeneration[slideId] : undefined),
-    [rootImageGeneration, slideId]
+    [rootImageGeneration, slideId],
   );
   const computedImageUrl = useMemo(
     () => computedGen?.url ?? image?.url,
-    [computedGen?.url, image?.url]
+    [computedGen?.url, image?.url],
   );
 
   // Get crop settings from image or use defaults
@@ -64,7 +64,7 @@ export function useRootImageActions(
         objectPosition: { x: 50, y: 50 },
         zoom: 1,
       },
-    [image?.cropSettings]
+    [image?.cropSettings],
   );
 
   // Derived styles
@@ -78,7 +78,7 @@ export function useRootImageActions(
       width: "100%",
       display: "block",
     }),
-    [cropSettings]
+    [cropSettings],
   );
 
   const sizeStyle: React.CSSProperties = useMemo(() => {
@@ -115,7 +115,7 @@ export function useRootImageActions(
         void saveImmediately();
       }, 100);
     },
-    [saveImmediately, setSlides, slideIndex]
+    [saveImmediately, setSlides, slideIndex],
   );
 
   const replaceImageUrl = useCallback(
@@ -142,7 +142,7 @@ export function useRootImageActions(
       setSlides(updatedSlides);
       void saveImmediately();
     },
-    [saveImmediately, setSlides, slideIndex]
+    [saveImmediately, setSlides, slideIndex],
   );
 
   const removeRootImage = useCallback(
@@ -163,12 +163,12 @@ export function useRootImageActions(
       });
       setSlides(updatedSlides);
     },
-    [setSlides, slideIndex]
+    [setSlides, slideIndex],
   );
 
   const removeRootImageFromSlide = useCallback(() => {
     const urls = [image?.url, computedImageUrl].filter((u): u is string =>
-      Boolean(u)
+      Boolean(u),
     );
     removeRootImage(urls);
   }, [computedImageUrl, image?.url, removeRootImage]);
@@ -188,7 +188,7 @@ export function useRootImageActions(
       setSlides(updatedSlides);
       void saveImmediately();
     },
-    [setSlides, slideIndex]
+    [setSlides, slideIndex],
   );
 
   // Resizable handler logic moved here
@@ -197,7 +197,7 @@ export function useRootImageActions(
       _e: unknown,
       _direction: unknown,
       _ref: HTMLElement,
-      d: { width: number; height: number }
+      d: { width: number; height: number },
     ) => {
       if (layoutType === "vertical") {
         const nextHeight = (size?.h ?? BASE_HEIGHT) + d.height;
@@ -216,7 +216,7 @@ export function useRootImageActions(
         updateRootImageSize({ w: nextWidth });
       }
     },
-    [layoutType, size?.h, size?.w, updateRootImageSize]
+    [layoutType, size?.h, size?.w, updateRootImageSize],
   );
 
   // Drag-and-drop logic moved here
@@ -230,7 +230,7 @@ export function useRootImageActions(
       cropSettings: cropSettings,
       children: [{ text: "" }],
     }),
-    [computedImageUrl, cropSettings, id, image?.query]
+    [computedImageUrl, cropSettings, id, image?.query],
   );
 
   const onDragEnd = useCallback(
@@ -242,7 +242,7 @@ export function useRootImageActions(
       }
       editor.setOption(DndPlugin, "isDragging", false);
     },
-    [editor, removeRootImageFromSlide]
+    [editor, removeRootImageFromSlide],
   );
 
   const { isDragging, handleRef } = useDraggable({

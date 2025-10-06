@@ -32,7 +32,7 @@ export interface UnsplashSearchResponse {
 
 export async function getImageFromUnsplash(
   query: string,
-  layoutType?: LayoutType
+  layoutType?: LayoutType,
 ): Promise<{ success: boolean; imageUrl?: string; error?: string }> {
   // Get the current session
   const session = await auth();
@@ -55,7 +55,7 @@ export async function getImageFromUnsplash(
         headers: {
           Authorization: `Client-ID ${env.UNSPLASH_ACCESS_KEY}`,
         },
-      }
+      },
     );
 
     if (!response.ok) {

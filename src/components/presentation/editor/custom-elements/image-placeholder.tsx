@@ -3,8 +3,8 @@
 import type React from "react";
 
 import { useUploadFile } from "@/components/plate/hooks/use-upload-file";
-import { Button } from "@/components/ui/button";
 import { ImageSourceSelector } from "@/components/presentation/theme/ImageSourceSelector";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -57,8 +57,8 @@ export default function ImagePlaceholder({
                   ...slide,
                   rootImage: { ...slide.rootImage!, url: file.ufsUrl },
                 }
-              : slide
-          )
+              : slide,
+          ),
         );
       }
     },
@@ -93,7 +93,7 @@ export default function ImagePlaceholder({
     <div
       className={cn(
         "relative h-full w-full rounded-lg overflow-hidden border border-border bg-gradient-to-br from-muted/50 to-muted",
-        className
+        className,
       )}
     >
       {/* Main placeholder area */}

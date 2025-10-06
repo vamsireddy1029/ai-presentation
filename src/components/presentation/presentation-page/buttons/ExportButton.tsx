@@ -70,7 +70,7 @@ export function ExportButton({
       const result = await exportPresentation(
         presentationId,
         fileName,
-        themeColors
+        themeColors,
       );
 
       if (result.success && result.data) {

@@ -29,7 +29,7 @@ export default function LayoutImageDrop({
 
   const handleImageDrop = (
     item: { element: TElement },
-    layoutType: LayoutType
+    layoutType: LayoutType,
   ) => {
     // Only handle image elements
     if (item?.element?.type !== ImagePlugin.key) return;
@@ -119,7 +119,7 @@ export default function LayoutImageDrop({
         className={cn(
           "absolute left-0 right-0 top-0 z-50 h-16",
           isTopOver ? "bg-primary/20" : "bg-transparent",
-          "transition-colors duration-200"
+          "transition-colors duration-200",
         )}
       />
 
@@ -129,7 +129,7 @@ export default function LayoutImageDrop({
         className={cn(
           "absolute bottom-0 left-0 top-16 z-50 w-8",
           isLeftOver ? "bg-primary/20" : "bg-transparent",
-          "transition-colors duration-200"
+          "transition-colors duration-200",
         )}
       />
 
@@ -139,7 +139,7 @@ export default function LayoutImageDrop({
         className={cn(
           "absolute bottom-0 right-0 top-16 z-50 w-8",
           isRightOver ? "bg-primary/20" : "bg-transparent",
-          "transition-colors duration-200"
+          "transition-colors duration-200",
         )}
       />
     </>

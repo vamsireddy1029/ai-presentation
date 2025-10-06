@@ -12,9 +12,9 @@ import {
 } from "@dnd-kit/sortable";
 import { PlateController } from "platejs/react";
 import { useEffect } from "react";
-import { GlobalUndoRedoHandler } from "./GlobalUndoRedoHandler";
-import PresentationEditor from "../editor/presentation-editor";
 import { PresentModeHeader } from "../dashboard/PresentModeHeader";
+import PresentationEditor from "../editor/presentation-editor";
+import { GlobalUndoRedoHandler } from "./GlobalUndoRedoHandler";
 
 interface PresentationSlidesViewProps {
   isGeneratingPresentation: boolean;
@@ -28,13 +28,13 @@ export const PresentationSlidesView = ({
   const nextSlide = usePresentationState((s) => s.nextSlide);
   const previousSlide = usePresentationState((s) => s.previousSlide);
   const setShouldShowExitHeader = usePresentationState(
-    (s) => s.setShouldShowExitHeader
+    (s) => s.setShouldShowExitHeader,
   );
   const currentPresentationTitle = usePresentationState(
-    (s) => s.currentPresentationTitle
+    (s) => s.currentPresentationTitle,
   );
   const shouldShowExitHeader = usePresentationState(
-    (s) => s.shouldShowExitHeader
+    (s) => s.shouldShowExitHeader,
   );
   const { items, sensors, handleDragEnd } = usePresentationSlides();
   // Use the slide change watcher to automatically save changes
@@ -100,14 +100,14 @@ export const PresentationSlidesView = ({
                 <div
                   className={cn(
                     `slide-container-${index}`,
-                    isPresenting && "h-screen w-screen"
+                    isPresenting && "h-screen w-screen",
                   )}
                 >
                   <PresentationEditor
                     initialContent={slide}
                     className={cn(
                       "min-h-[300px] rounded-md border",
-                      isPresenting && "h-screen w-screen"
+                      isPresenting && "h-screen w-screen",
                     )}
                     id={slide.id}
                     autoFocus={index === currentSlideIndex}

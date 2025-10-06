@@ -16,7 +16,7 @@ export async function exportPresentation(
     text: string;
     heading: string;
     muted: string;
-  }>
+  }>,
 ) {
   try {
     const session = await auth();
@@ -28,13 +28,13 @@ export async function exportPresentation(
     // This is a placeholder - implement actual data fetching based on your data model
     const presentationData = await fetchPresentationData(
       presentationId,
-      session.user.id
+      session.user.id,
     );
 
     // Generate the PPT file (ArrayBuffer)
     const arrayBuffer = await convertPlateJSToPPTX(
       { slides: presentationData.slides },
-      theme
+      theme,
     );
 
     // Convert ArrayBuffer to Base64 string for transmission to the client

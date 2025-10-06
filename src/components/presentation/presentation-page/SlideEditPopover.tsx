@@ -41,7 +41,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
         query: string;
         url?: string;
       };
-    }>
+    }>,
   ) => {
     const updatedSlides = [...slides];
     updatedSlides[index] = {
@@ -135,7 +135,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="icon"
                 className={cn(
                   "h-6 w-6 border-zinc-800 bg-zinc-900",
-                  currentAlignment === "start" && "bg-blue-600"
+                  currentAlignment === "start" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ alignment: "start" })}
               >
@@ -146,7 +146,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="icon"
                 className={cn(
                   "h-6 w-6 border-zinc-800 bg-zinc-900",
-                  currentAlignment === "center" && "bg-blue-600"
+                  currentAlignment === "center" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ alignment: "center" })}
               >
@@ -157,7 +157,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="icon"
                 className={cn(
                   "h-6 w-6 border-zinc-800 bg-zinc-900",
-                  currentAlignment === "end" && "bg-blue-600"
+                  currentAlignment === "end" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ alignment: "end" })}
               >
@@ -178,7 +178,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="icon"
                 className={cn(
                   "h-6 w-6 border-zinc-800 bg-zinc-900",
-                  currentLayout === "vertical" && "bg-blue-600"
+                  currentLayout === "vertical" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ layoutType: "vertical" })}
               >
@@ -189,7 +189,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="icon"
                 className={cn(
                   "h-6 w-6 border-zinc-800 bg-zinc-900",
-                  currentLayout === "left" && "bg-blue-600"
+                  currentLayout === "left" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ layoutType: "left" })}
               >
@@ -200,7 +200,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="icon"
                 className={cn(
                   "h-6 w-6 border-zinc-800 bg-zinc-900",
-                  currentLayout === "right" && "bg-blue-600"
+                  currentLayout === "right" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ layoutType: "right" })}
               >
@@ -211,7 +211,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="icon"
                 className={cn(
                   "h-6 w-6 border-zinc-800 bg-zinc-900",
-                  currentLayout === "background" && "bg-blue-600"
+                  currentLayout === "background" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ layoutType: "background" })}
               >
@@ -232,7 +232,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="sm"
                 className={cn(
                   "h-6 border-zinc-800 bg-zinc-900 px-2",
-                  currentWidth === "S" && "bg-blue-600"
+                  currentWidth === "S" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ width: "S" })}
               >
@@ -243,7 +243,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="sm"
                 className={cn(
                   "h-6 border-zinc-800 bg-zinc-900 px-2",
-                  currentWidth === "M" && "bg-blue-600"
+                  currentWidth === "M" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ width: "M" })}
               >
@@ -254,7 +254,7 @@ export function SlideEditPopover({ index }: SlideEditPopoverProps) {
                 size="sm"
                 className={cn(
                   "h-6 border-zinc-800 bg-zinc-900 px-2",
-                  currentWidth === "L" && "bg-blue-600"
+                  currentWidth === "L" && "bg-blue-600",
                 )}
                 onClick={() => updateSlide({ width: "L" })}
               >

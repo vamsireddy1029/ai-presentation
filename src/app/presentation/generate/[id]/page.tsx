@@ -59,7 +59,7 @@ export default function PresentationGenerateWithIdPage() {
         return result.presentation;
       },
       enabled: !!id,
-    }
+    },
   );
 
   // Function to clear the cookie
@@ -103,7 +103,7 @@ export default function PresentationGenerateWithIdPage() {
     if (presentationData && !isLoadingPresentation && !isGeneratingOutline) {
       setCurrentPresentation(presentationData.id, presentationData.title);
       setPresentationInput(
-        presentationData.presentation?.prompt ?? presentationData.title
+        presentationData.presentation?.prompt ?? presentationData.title,
       );
 
       if (presentationData.presentation?.outline) {
@@ -114,7 +114,7 @@ export default function PresentationGenerateWithIdPage() {
       if (presentationData.presentation?.searchResults) {
         try {
           const searchResults = Array.isArray(
-            presentationData.presentation.searchResults
+            presentationData.presentation.searchResults,
           )
             ? presentationData.presentation.searchResults
             : JSON.parse(presentationData.presentation.searchResults as string);
@@ -164,7 +164,7 @@ export default function PresentationGenerateWithIdPage() {
 
       if (presentationData?.presentation?.imageSource) {
         setImageSource(
-          presentationData.presentation.imageSource as "ai" | "stock"
+          presentationData.presentation.imageSource as "ai" | "stock",
         );
       }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   AudioWaveform,
   File,
@@ -11,8 +13,6 @@ import {
 } from "lucide-react";
 import { useCallback } from "react";
 import { type FileRejection, useDropzone } from "react-dropzone";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "./button";
 import { useToast } from "./use-toast";
 
@@ -134,40 +134,43 @@ export default function FileUpload({
         });
       }
     },
-    []
+    [],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: acceptedTypes.reduce((acc, type) => {
-      switch (type) {
-        case "pdf":
-          acc["application/pdf"] = [".pdf"];
-          break;
-        case "doc":
-          acc["application/msword"] = [".doc"];
-          break;
-        case "docx":
-          acc[
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-          ] = [".docx"];
-          break;
-        case "txt":
-          acc["text/plain"] = [".txt"];
-          break;
-        case "webm":
-          acc["video/webm"] = [".webm"];
-          break;
-        case "mp4":
-          acc["video/mp4"] = [".mp4"];
-          break;
-        case "mov":
-          acc["video/quicktime"] = [".mov"];
-          break;
-        // Add more cases for other file types as needed
-      }
-      return acc;
-    }, {} as Record<string, string[]>),
+    accept: acceptedTypes.reduce(
+      (acc, type) => {
+        switch (type) {
+          case "pdf":
+            acc["application/pdf"] = [".pdf"];
+            break;
+          case "doc":
+            acc["application/msword"] = [".doc"];
+            break;
+          case "docx":
+            acc[
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            ] = [".docx"];
+            break;
+          case "txt":
+            acc["text/plain"] = [".txt"];
+            break;
+          case "webm":
+            acc["video/webm"] = [".webm"];
+            break;
+          case "mp4":
+            acc["video/mp4"] = [".mp4"];
+            break;
+          case "mov":
+            acc["video/quicktime"] = [".mov"];
+            break;
+          // Add more cases for other file types as needed
+        }
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    ),
     maxFiles,
     maxSize,
     multiple,

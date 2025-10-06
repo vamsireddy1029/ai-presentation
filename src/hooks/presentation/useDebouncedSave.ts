@@ -67,8 +67,8 @@ export const useDebouncedSave = (options: UseDebouncedSaveOptions = {}) => {
         }
       },
       delay,
-      { maxWait: delay * 2 }
-    )
+      { maxWait: delay * 2 },
+    ),
   ).current;
 
   // Cleanup debounce on unmount

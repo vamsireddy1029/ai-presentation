@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { EditorState } from "prosemirror-state";
-import { EditorView } from "prosemirror-view";
-import mySchema from "./ProseMirrorSchema";
-import { keymap } from "prosemirror-keymap";
+import { cn } from "@/lib/utils";
 import { baseKeymap, toggleMark } from "prosemirror-commands";
 import { history, redo, undo } from "prosemirror-history";
+import { keymap } from "prosemirror-keymap";
 import {
   defaultMarkdownParser,
   defaultMarkdownSerializer,
 } from "prosemirror-markdown";
+import { EditorState } from "prosemirror-state";
+import { EditorView } from "prosemirror-view";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import FloatingToolbar from "./FloatingToolbar";
-import { cn } from "@/lib/utils";
+import mySchema from "./ProseMirrorSchema";
 
 interface ProseMirrorEditorProps {
   content: string;
