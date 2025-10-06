@@ -10,15 +10,20 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 
 1. **Fork the repository** on GitHub
 2. **Clone your fork**
+
    ```bash
    git clone git@github.com:allweonedev/presentation-ai.git
    cd presentation-ai
    ```
+
 3. **Set up the development environment**
+
    ```bash
    pnpm install
    ```
+
 4. **Create a new branch** for your contribution
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -26,23 +31,19 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 ## Development Workflow
 
 1. Make your changes locally
-2. Follow the code style guidelines
-3. Write tests for your changes when applicable
-4. Ensure all tests pass with `pnpm test`
-5. Commit your changes using clear commit messages
-6. Push your branch to your fork
-7. Open a pull request from your fork to the main repository
+1. Follow the code style guidelines
+1. Commit your changes using clear commit messages
+1. Push your branch to your fork
+1. Open a pull request from your fork to the main repository
 
 ## Pull Request Process
 
 1. **Use a clear and descriptive title** for your PR
-2. **Include a detailed description** explaining what your changes do and why they should be included
-3. **Link any related issues** using GitHub issue references
-4. **Update documentation** if your changes modify functionality
-5. **Ensure CI passes** on your PR
-6. Wait for a maintainer to review your PR
-7. Address any feedback from reviewers
-8. Once approved, a maintainer will merge your PR
+1. **Include a detailed description** explaining what your changes do and why they should be included
+1. **Link any related issues** using GitHub issue references
+1. Wait for a maintainer to review your PR
+1. Address any feedback from reviewers
+1. Once approved, a maintainer will merge your PR
 
 ## Coding Standards
 
@@ -61,14 +62,7 @@ We follow conventional commit messages:
 - `docs:` for documentation changes
 - `style:` for formatting changes
 - `refactor:` for code refactoring
-- `test:` for adding or modifying tests
 - `chore:` for changes to the build process or auxiliary tools
-
-## Documentation
-
-- Update documentation when adding or changing features
-- Use clear, concise language
-- Include examples when helpful
 
 ## Issue Reporting
 
@@ -84,7 +78,7 @@ If you find a bug or have a feature request:
 If you have questions or need help, you can:
 
 - Open a discussion on GitHub
-- Reach out via the project's communication channels
+- Reach out via the project's communication channels ([Discord](https://discord.gg/fsMHMhAHRV) / [Issues](https://github.com/allweonedev/presentation-ai/issues))
 
 ## License
 
