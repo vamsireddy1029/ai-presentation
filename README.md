@@ -1,6 +1,8 @@
-# ALLWEONE® AI Presentation Generator
+# ALLWEONE® AI Presentation Generator (Gamma Alternative)
 
-https://github.com/user-attachments/assets/a21dbd49-75b8-4822-bcec-a75b581d9c60
+⭐ Help us reach more developers and grow the ALLWEONE community. Star this repo!
+
+<https://github.com/user-attachments/assets/a21dbd49-75b8-4822-bcec-a75b581d9c60>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -8,7 +10,7 @@ https://github.com/user-attachments/assets/a21dbd49-75b8-4822-bcec-a75b581d9c60
 
 An open-source inspired by gamma.app ,AI-powered presentation generator that creates beautiful Slides with AI, customizable slides in minutes. This tool is part of the broader ALLWEONE AI platform.
 
-[Live Demo](https://allweone.com/presentations) | [Video Tutorial](https://www.youtube.com/watch?v=UUePLJeFqVQ)
+[Live Demo](http://presentation.allweone.com) | [Video Tutorial](https://www.youtube.com/watch?v=UUePLJeFqVQ)
 
 ## 🌟 Features
 
@@ -200,19 +202,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Next.js](https://nextjs.org/) for the React framework
 - All our open-source [contributors](https://github.com/allweonedev/presentation-ai/graphs/contributors)
 
-## 🔮 Future Plans
+Built with ❤️ by the ALLWEONE™ Team 🇧🇷🇳🇵🇺🇸🇮🇳🇨🇳🇦🇫🇦🇱🇩🇿🇦🇸🇦🇩🇦🇴🇦🇮🇦🇶🇦🇬🇦🇷🇦🇲🇦🇼🇦🇺🇦🇹🇦🇿🇧🇸🇧🇭🇧🇩🇧🇧🇧🇾🇧🇪🇧🇿🇧🇯🇧🇹🇧🇴🇧🇦🇧🇼🇮🇴🇻🇬🇧🇳🇧🇬🇧🇫🇧🇮🇨🇻🇰🇭🇨🇲🇨🇦🇮🇨🇨🇿🇨🇱🇨🇽🇨🇨🇨🇴🇰🇲🇨🇬🇨🇩🇨🇰🇨🇷🇭🇷🇨🇺🇨🇼🇨🇾🇨🇿🇩🇰🇩🇯🇩🇲🇩🇴🇪🇨🇪🇬🇸🇻🇬🇶🇪🇷🇪🇪🇸🇿🇪🇹🇫🇰🇫🇴🇫🇯🇫🇮🇫🇷🇬🇫🇵🇫🇹🇫🇬🇦🇬🇲🇬🇪🇩🇪🇬🇭🇬🇮🇬🇷🇬🇱🇬🇩🇬🇺🇬🇹🇬🇬🇬🇳🇬🇼🇬🇾🇭🇹🇭🇳🇭🇰🇭🇺🇮🇸🇮🇩🇮🇷🇮🇶🇮🇪🇮🇲🇮🇱🇮🇹🇨🇮🇯🇲🇯🇵🇯🇪🇯🇴🇰🇿🇰🇪🇰🇮🇽🇰🇰🇼🇰🇬🇱🇦🇱🇻🇱🇧🇱🇸🇱🇷🇱🇾🇱🇮🇱🇹🇱🇺🇲🇴🇲🇬🇲🇼🇲🇾🇲🇻🇲🇱🇲🇹🇲🇭🇲🇶🇲🇷🇲🇺🇾🇹🇲🇽🇫🇲🇲🇩🇲🇨🇲🇳🇲🇪🇲🇸🇲🇦🇲🇿🇲🇲🇳🇦🇳🇷🇳🇱🇳🇨🇳🇿🇳🇮🇳🇪🇳🇬🇳🇺🇲🇰🇰🇵🇳🇴🇴🇲🇵🇰🇵🇼🇵🇸🇵🇦🇵🇬🇵🇾🇵🇪🇵🇭🇵🇳🇵🇱🇵🇹🇵🇷🇶🇦🇷🇪🇷🇴🇷🇺🇷🇼🇼🇸🇸🇲🇸🇹🇸🇦🇸🇳🇷🇸🇸🇨🇸🇱🇸🇬🇸🇽🇸🇰🇸🇮🇸🇧🇸🇴🇿🇦🇬🇸🇰🇷🇸🇸🇪🇸🇱🇰🇸🇩🇸🇷🇸🇿🇸🇪🇨🇭🇸🇾🇹🇼🇹🇯🇹🇿🇹🇭🇹🇱🇹🇬🇹🇰🇹🇴🇹🇹🇹🇳🇹🇷🇹🇲🇹🇨🇹🇻🇺🇬🇺🇦🇦🇪🇬🇧🇻🇮🇺🇾🇺🇿🇻🇺🇻🇦🇻🇪🇻🇳🇼🇫🇪🇭🇾🇪🇿🇲🇿🇼
 
-- Export options (PowerPoint, PDF, Google Slides)
-- Collaborative editing
-- More AI models and image generation options
-- Template library
-- Voice commands for presentations
-- Advanced animation options
-- More layout and component options for slides
-- Enhanced Plate.js integration for richer slide content
-
----
-
-Built with ❤️ by the ALLWEONE™ team 🇺🇸🇧🇷🇳🇵🇮🇳
-
-For any questions or support, please open an issue on GitHub or contact us at Discord https://discord.gg/232cdU5Z
+For any questions or support, please open an issue on GitHub or contact us at Discord <https://discord.gg/wSVNudUBdY>
