@@ -16,10 +16,10 @@ const config = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
-      // {
-      //   protocol: "https",
-      //   hostname:"<your-uploadthing-domain>"
-      // }
+      {
+        protocol: "https",
+        hostname: "*.ufs.sh",
+      },
     ],
   },
 };
