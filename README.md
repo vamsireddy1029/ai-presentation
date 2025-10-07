@@ -132,6 +132,28 @@ Before you begin, ensure you have the following installed:
 
    > 💡 **Tip**: Copy `.env.example` to `.env` and fill in your actual values.
 
+4. **Allow Uploadthing images in Image optimization**
+
+```js
+   images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      // {
+      //   protocol: "https",
+      //   hostname:"<your-uploadthing-domain>"
+      // }
+      //  Uncomment this and replace with you uploadthing domain
+    ],
+  },
+```
+
 ### Database Setup
 
 1. **Initialize the database**

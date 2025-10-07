@@ -10,16 +10,16 @@ const config = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "utfs.io",
-      },
-      {
-        protocol: "https",
-        hostname: "i.ytimg.com",
-      },
-      {
-        protocol: "https",
         hostname: "lh3.googleusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      // {
+      //   protocol: "https",
+      //   hostname:"<your-uploadthing-domain>"
+      // }
     ],
   },
 };

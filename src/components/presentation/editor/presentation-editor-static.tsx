@@ -58,7 +58,7 @@ const PresentationEditorStaticView = React.memo(
     return (
       <div
         className={cn(
-          "flex min-h-[500px]",
+          "flex min-h-[500px] w-full",
           "scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/30 overflow-hidden p-0 scrollbar-thin scrollbar-track-transparent",
           "relative text-foreground",
           "focus-within:ring-2 focus-within:ring-primary focus-within:ring-opacity-50",
@@ -87,7 +87,7 @@ const PresentationEditorStaticView = React.memo(
         <EditorStatic
           className={cn(
             className,
-            "flex flex-col border-none !bg-transparent p-12 outline-none",
+            "flex flex-col border-none !bg-transparent p-12 outline-none h-full",
             initialContent?.alignment === "start" && "justify-start",
             initialContent?.alignment === "center" && "justify-center",
             initialContent?.alignment === "end" && "justify-end",
