@@ -272,7 +272,8 @@ presentation/
 | Presentation analytics       | 🔴 Not Started    | Track views, engagement, and presentation performance                                       |
 | AI presenter notes           | 🔴 Not Started    | Auto-generate speaker notes for each slide                                                  |
 | Custom font uploads          | 🔴 Not Started    | Allow users to upload and use their own fonts                                               |
-| Plugin system                | 🔴 Not Started    | Allow community to build and share extensions                                               |
+| Plugin system                | 🔴 Not Started    | Allow community to build and share extensions
+| API                          | 🔴 Not Started    | Allow developers to use the allweone presentation to generate content in their own applications. 
 
 > 📝 **Note**: This roadmap is subject to change based on community feedback and priorities. Want to contribute to any of these features? Check out our [Contributing Guidelines](CONTRIBUTING.md)!
 
