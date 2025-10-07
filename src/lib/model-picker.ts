@@ -1,7 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { type LanguageModelV1 } from "ai";
-import { ollama } from "ollama-ai-provider-v2";
+import { createOllama } from "ollama-ai-provider";
 
 /**
  * Centralized model picker function for all presentation generation routes
@@ -13,6 +13,7 @@ export function modelPicker(
 ): LanguageModelV1 {
   if (modelProvider === "ollama" && modelId) {
     // Use Ollama AI provider
+    const ollama = createOllama();
     return ollama(modelId) as unknown as LanguageModelV1;
   }
 
