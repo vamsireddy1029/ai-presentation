@@ -28,6 +28,8 @@ export function PresentationGenerationManager() {
     shouldStartOutlineGeneration,
     shouldStartPresentationGeneration,
     webSearchEnabled,
+    modelProvider,
+    modelId,
     setIsGeneratingOutline,
     setShouldStartOutlineGeneration,
     setShouldStartPresentationGeneration,
@@ -291,6 +293,8 @@ export function PresentationGenerationManager() {
       prompt: presentationInput,
       numberOfCards: numSlides,
       language,
+      modelProvider,
+      modelId,
     },
     onFinish: () => {
       setIsGeneratingOutline(false);
@@ -444,6 +448,8 @@ export function PresentationGenerationManager() {
         presentationStyle,
         currentPresentationTitle,
         searchResults: stateSearchResults,
+        modelProvider,
+        modelId,
         setThumbnailUrl,
       } = usePresentationState.getState();
 
@@ -459,6 +465,8 @@ export function PresentationGenerationManager() {
           searchResults: stateSearchResults,
           language,
           tone: presentationStyle,
+          modelProvider,
+          modelId,
         },
       });
     }

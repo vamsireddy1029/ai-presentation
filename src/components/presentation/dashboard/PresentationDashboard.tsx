@@ -27,7 +27,6 @@ export function PresentationDashboard({
     setIsGeneratingOutline,
     language,
     theme,
-    // We'll use these instead of directly calling startOutlineGeneration
     setShouldStartOutlineGeneration,
   } = usePresentationState();
 

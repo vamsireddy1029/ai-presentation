@@ -1,9 +1,6 @@
+import { modelPicker } from "@/lib/model-picker";
 import { auth } from "@/server/auth";
-import { StringOutputParser } from "@langchain/core/output_parsers";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { RunnableSequence } from "@langchain/core/runnables";
-import { ChatOpenAI } from "@langchain/openai";
-import { LangChainAdapter } from "ai";
+import { streamText } from "ai";
 import { NextResponse } from "next/server";
 // Use AI SDK types for proper type safety
 
@@ -13,6 +10,8 @@ interface SlidesRequest {
   outline: string[]; // Array of main topics with markdown content
   language: string; // Language to use for the slides
   tone: string; // Style for image queries (optional)
+  modelProvider?: string; // Model provider (openai, ollama, or lmstudio)
+  modelId?: string; // Specific model ID for the provider
   searchResults?: Array<{ query: string; results: unknown[] }>; // Search results for context
 }
 // TODO: Add table and chart to the available layouts
@@ -232,10 +231,6 @@ For each outline point:
 Now create a complete XML presentation with {TOTAL_SLIDES} slides that significantly expands on the outline.
 `;
 
-const model = new ChatOpenAI({
-  model: "gpt-4o-mini",
-});
-
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -249,6 +244,8 @@ export async function POST(req: Request) {
       outline,
       language,
       tone,
+      modelProvider = "openai",
+      modelId,
       searchResults,
     } = (await req.json()) as SlidesRequest;
 
@@ -295,22 +292,25 @@ export async function POST(req: Request) {
       day: "numeric",
     });
 
-    const prompt = PromptTemplate.fromTemplate(slidesTemplate);
-    const stringOutputParser = new StringOutputParser();
-    const chain = RunnableSequence.from([prompt, model, stringOutputParser]);
+    const model = modelPicker(modelProvider, modelId);
 
-    const stream = await chain.stream({
-      TITLE: title,
-      PROMPT: userPrompt || "No specific prompt provided",
-      CURRENT_DATE: currentDate,
-      LANGUAGE: language,
-      TONE: tone,
-      OUTLINE_FORMATTED: outline.join("\n\n"),
-      TOTAL_SLIDES: outline.length, // +2 for title and conclusion slides
-      SEARCH_RESULTS: searchResultsText,
+    // Format the prompt with template variables
+    const formattedPrompt = slidesTemplate
+      .replace(/{TITLE}/g, title)
+      .replace(/{PROMPT}/g, userPrompt || "No specific prompt provided")
+      .replace(/{CURRENT_DATE}/g, currentDate)
+      .replace(/{LANGUAGE}/g, language)
+      .replace(/{TONE}/g, tone)
+      .replace(/{OUTLINE_FORMATTED}/g, outline.join("\n\n"))
+      .replace(/{TOTAL_SLIDES}/g, outline.length.toString())
+      .replace(/{SEARCH_RESULTS}/g, searchResultsText);
+
+    const result = streamText({
+      model,
+      prompt: formattedPrompt,
     });
 
-    return LangChainAdapter.toDataStreamResponse(stream);
+    return result.toDataStreamResponse();
   } catch (error) {
     console.error("Error in presentation generation:", error);
     return NextResponse.json(

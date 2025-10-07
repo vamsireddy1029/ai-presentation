@@ -1,14 +1,14 @@
+import { modelPicker } from "@/lib/model-picker";
 import { auth } from "@/server/auth";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { RunnableSequence } from "@langchain/core/runnables";
-import { ChatOpenAI } from "@langchain/openai";
-import { LangChainAdapter } from "ai";
+import { streamText } from "ai";
 import { NextResponse } from "next/server";
 
 interface OutlineRequest {
   prompt: string;
   numberOfCards: number;
   language: string;
+  modelProvider?: string;
+  modelId?: string;
 }
 
 const outlineTemplate = `Given the following presentation topic and requirements, generate a structured outline with {numberOfCards} main topics in markdown format.
@@ -49,11 +49,6 @@ Make sure the topics:
 7. Keep each bullet point brief - just one sentence per point
 8. Include exactly 2-3 bullet points per topic (not more, not less)`;
 
-const outlineChain = RunnableSequence.from([
-  PromptTemplate.fromTemplate(outlineTemplate),
-  new ChatOpenAI({ model: "gpt-4o-mini" }),
-]);
-
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -61,8 +56,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { prompt, numberOfCards, language } =
-      (await req.json()) as OutlineRequest;
+    const {
+      prompt,
+      numberOfCards,
+      language,
+      modelProvider = "openai",
+      modelId,
+    } = (await req.json()) as OutlineRequest;
 
     if (!prompt || !numberOfCards || !language) {
       return NextResponse.json(
@@ -93,14 +93,21 @@ export async function POST(req: Request) {
       day: "numeric",
     });
 
-    const stream = await outlineChain.stream({
-      prompt,
-      numberOfCards,
-      language: actualLanguage,
-      currentDate,
+    const model = modelPicker(modelProvider, modelId);
+
+    // Format the prompt with template variables
+    const formattedPrompt = outlineTemplate
+      .replace(/{numberOfCards}/g, numberOfCards.toString())
+      .replace(/{language}/g, actualLanguage)
+      .replace(/{currentDate}/g, currentDate)
+      .replace(/{prompt}/g, prompt);
+
+    const result = streamText({
+      model,
+      prompt: formattedPrompt,
     });
 
-    return LangChainAdapter.toDataStreamResponse(stream);
+    return result.toDataStreamResponse();
   } catch (error) {
     console.error("Error in outline generation:", error);
     return NextResponse.json(

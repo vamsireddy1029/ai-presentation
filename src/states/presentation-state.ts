@@ -21,6 +21,8 @@ interface PresentationState {
   imageSource: "ai" | "stock";
   stockImageProvider: "unsplash";
   presentationStyle: string;
+  modelProvider: "openai" | "ollama" | "lmstudio";
+  modelId: string;
   savingStatus: "idle" | "saving" | "saved";
   isPresenting: boolean;
   currentSlideIndex: number;
@@ -83,6 +85,8 @@ interface PresentationState {
   setImageSource: (source: "ai" | "stock") => void;
   setStockImageProvider: (provider: "unsplash") => void;
   setPresentationStyle: (style: string) => void;
+  setModelProvider: (provider: "openai" | "ollama" | "lmstudio") => void;
+  setModelId: (id: string) => void;
   setSavingStatus: (status: "idle" | "saving" | "saved") => void;
   setIsPresenting: (isPresenting: boolean) => void;
   setCurrentSlideIndex: (index: number) => void;
@@ -136,6 +140,8 @@ export const usePresentationState = create<PresentationState>((set) => ({
   imageSource: "stock",
   stockImageProvider: "unsplash",
   presentationStyle: "professional",
+  modelProvider: "openai",
+  modelId: "llama3.1:8b",
   slides: [], // Now holds the new slide object structure
   rootImageGeneration: {},
   savingStatus: "idle",
@@ -218,6 +224,8 @@ export const usePresentationState = create<PresentationState>((set) => ({
   setImageSource: (source) => set({ imageSource: source }),
   setStockImageProvider: (provider) => set({ stockImageProvider: provider }),
   setPresentationStyle: (style) => set({ presentationStyle: style }),
+  setModelProvider: (provider) => set({ modelProvider: provider }),
+  setModelId: (id) => set({ modelId: id }),
   setSavingStatus: (status) => set({ savingStatus: status }),
   setIsPresenting: (isPresenting) => set({ isPresenting }),
   setCurrentSlideIndex: (index) => set({ currentSlideIndex: index }),

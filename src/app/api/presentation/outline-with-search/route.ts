@@ -1,15 +1,15 @@
-import { env } from "@/env";
+import { modelPicker } from "@/lib/model-picker";
 import { auth } from "@/server/auth";
-import { createOpenAI } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { NextResponse } from "next/server";
-import z from "zod";
 import { search_tool } from "./search_tool";
 
 interface OutlineRequest {
   prompt: string;
   numberOfCards: number;
   language: string;
+  modelProvider?: string;
+  modelId?: string;
 }
 
 const outlineSystemPrompt = `You are an expert presentation outline generator. Your task is to create a comprehensive and engaging presentation outline based on the user's topic.
@@ -61,8 +61,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { prompt, numberOfCards, language } =
-      (await req.json()) as OutlineRequest;
+    const {
+      prompt,
+      numberOfCards,
+      language,
+      modelProvider = "openai",
+      modelId,
+    } = (await req.json()) as OutlineRequest;
 
     if (!prompt || !numberOfCards || !language) {
       return NextResponse.json(
@@ -94,10 +99,11 @@ export async function POST(req: Request) {
       day: "numeric",
     });
 
-    const openai = createOpenAI({ apiKey: env.OPENAI_API_KEY });
+    // Create model based on selection
+    const model = modelPicker(modelProvider, modelId);
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model,
       system: outlineSystemPrompt
         .replace("{numberOfCards}", numberOfCards.toString())
         .replace("{language}", actualLanguage)
@@ -109,17 +115,7 @@ export async function POST(req: Request) {
         },
       ],
       tools: {
-        webSearch: {
-          execute: async ({ query }) => {
-            const result = await search_tool.invoke({ query });
-            return result;
-          },
-          description:
-            "Use this tool to search the web for information, you can call this tool multiple times to get more information",
-          parameters: z.object({
-            query: z.string(),
-          }),
-        },
+        webSearch: search_tool,
       },
       maxSteps: 5, // Allow up to 5 tool calls
       toolChoice: "auto", // Let the model decide when to use tools
