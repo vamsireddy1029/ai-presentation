@@ -31,6 +31,7 @@ export function OutlineList() {
     numSlides,
     isGeneratingOutline,
     webSearchEnabled,
+    outlineThinking,
   } = usePresentationState();
 
   const [items, setItems] = useState<OutlineItemType[]>(

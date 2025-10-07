@@ -3,6 +3,7 @@
 import { generateImageAction } from "@/app/_actions/image/generate";
 import { getImageFromUnsplash } from "@/app/_actions/image/unsplash";
 import { updatePresentation } from "@/app/_actions/presentation/presentationActions";
+import { extractThinking } from "@/lib/thinking-extractor";
 import { usePresentationState } from "@/states/presentation-state";
 import { useChat, useCompletion } from "@ai-sdk/react";
 import { useEffect, useRef } from "react";
@@ -38,6 +39,8 @@ export function PresentationGenerationManager() {
     setOutline,
     setSearchResults,
     setSlides,
+    setOutlineThinking,
+    setPresentationThinking,
     setIsGeneratingPresentation,
     setCurrentPresentation,
     currentPresentationId,
@@ -69,8 +72,17 @@ export function PresentationGenerationManager() {
 
   // Function to update slides using requestAnimationFrame
   const updateSlidesWithRAF = (): void => {
+    // Extract thinking for presentation and parse only the remaining content
+    const presentationThinkingExtract = extractThinking(presentationCompletion);
+    if (presentationThinkingExtract.hasThinking) {
+      setPresentationThinking(presentationThinkingExtract.thinking);
+    }
+    const presentationContentToParse = presentationThinkingExtract.hasThinking
+      ? presentationThinkingExtract.content
+      : presentationCompletion;
+
     const processedPresentationCompletion = stripXmlCodeBlock(
-      presentationCompletion,
+      presentationContentToParse,
     );
     streamingParserRef.current.reset();
     streamingParserRef.current.parseChunk(processedPresentationCompletion);
@@ -227,13 +239,21 @@ export function PresentationGenerationManager() {
 
     // Extract outline from the last assistant message
     if (lastMessage.role === "assistant" && lastMessage.content) {
-      let cleanContent = lastMessage.content;
+      // Extract <think> content from assistant message and keep only the remainder for parsing
+      const thinkingExtract = extractThinking(lastMessage.content);
+      if (thinkingExtract.hasThinking) {
+        setOutlineThinking(thinkingExtract.thinking);
+      }
+
+      let cleanContent = thinkingExtract.hasThinking
+        ? thinkingExtract.content
+        : lastMessage.content;
 
       // Only extract title if we haven't done it yet
       if (!titleExtractedRef.current) {
-        const { title, cleanContent: extractedCleanContent } = extractTitle(
-          lastMessage.content,
-        );
+        const { title, cleanContent: extractedCleanContent } =
+          extractTitle(cleanContent);
+
         cleanContent = extractedCleanContent;
 
         // Set the title if found and mark as extracted
@@ -246,9 +266,7 @@ export function PresentationGenerationManager() {
         }
       } else {
         // Title already extracted, just remove it from content if it exists
-        cleanContent = lastMessage.content
-          .replace(/<TITLE>.*?<\/TITLE>/i, "")
-          .trim();
+        cleanContent = cleanContent.replace(/<TITLE>.*?<\/TITLE>/i, "").trim();
       }
 
       // Parse the outline into sections

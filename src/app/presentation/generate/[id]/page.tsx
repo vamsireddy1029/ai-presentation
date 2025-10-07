@@ -2,6 +2,7 @@
 
 import { getPresentation } from "@/app/_actions/presentation/presentationActions";
 import { getCustomThemeById } from "@/app/_actions/presentation/theme-actions";
+import { ThinkingDisplay } from "@/components/presentation/dashboard/ThinkingDisplay";
 import { Header } from "@/components/presentation/outline/Header";
 import { OutlineList } from "@/components/presentation/outline/OutlineList";
 import { PromptInput } from "@/components/presentation/outline/PromptInput";
@@ -33,6 +34,7 @@ export default function PresentationGenerateWithIdPage() {
     startPresentationGeneration,
     isGeneratingPresentation,
     isGeneratingOutline,
+    outlineThinking,
     setOutline,
     setSearchResults,
     setShouldStartOutlineGeneration,
@@ -223,6 +225,11 @@ export default function PresentationGenerateWithIdPage() {
           <div className="space-y-8">
             <Header />
             <PromptInput />
+            <ThinkingDisplay
+              thinking={outlineThinking}
+              isGenerating={isGeneratingOutline}
+              title="AI is thinking about your outline..."
+            />
             <ToolCallDisplay />
             <OutlineList />
 

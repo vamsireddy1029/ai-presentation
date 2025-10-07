@@ -40,6 +40,10 @@ interface PresentationState {
   webSearchEnabled: boolean; // Toggle for web search in outline generation
   slides: PlateSlide[]; // This now holds the new object structure
 
+  // Thinking content from AI responses
+  outlineThinking: string; // Thinking content from outline generation
+  presentationThinking: string; // Thinking content from presentation generation
+
   // Root image generation tracking by slideId
   rootImageGeneration: Record<
     string,
@@ -80,6 +84,8 @@ interface PresentationState {
   setSearchResults: (
     results: Array<{ query: string; results: unknown[] }>,
   ) => void;
+  setOutlineThinking: (thinking: string) => void;
+  setPresentationThinking: (thinking: string) => void;
   setWebSearchEnabled: (enabled: boolean) => void;
   setImageModel: (model: ImageModelList) => void;
   setImageSource: (source: "ai" | "stock") => void;
@@ -143,6 +149,8 @@ export const usePresentationState = create<PresentationState>((set) => ({
   modelProvider: "openai",
   modelId: "llama3.1:8b",
   slides: [], // Now holds the new slide object structure
+  outlineThinking: "",
+  presentationThinking: "",
   rootImageGeneration: {},
   savingStatus: "idle",
   isPresenting: false,
@@ -219,6 +227,9 @@ export const usePresentationState = create<PresentationState>((set) => ({
   setPresentationInput: (input) => set({ presentationInput: input }),
   setOutline: (topics) => set({ outline: topics }),
   setSearchResults: (results) => set({ searchResults: results }),
+  setOutlineThinking: (thinking) => set({ outlineThinking: thinking }),
+  setPresentationThinking: (thinking) =>
+    set({ presentationThinking: thinking }),
   setWebSearchEnabled: (enabled) => set({ webSearchEnabled: enabled }),
   setImageModel: (model) => set({ imageModel: model }),
   setImageSource: (source) => set({ imageSource: source }),
@@ -279,6 +290,8 @@ export const usePresentationState = create<PresentationState>((set) => ({
       outline: [],
       searchResults: [],
       slides: [],
+      outlineThinking: "",
+      presentationThinking: "",
       rootImageGeneration: {},
       config: {},
     })),

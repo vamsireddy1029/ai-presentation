@@ -13,6 +13,7 @@ import {
 import { PlateController } from "platejs/react";
 import { useEffect } from "react";
 import { PresentModeHeader } from "../dashboard/PresentModeHeader";
+import { ThinkingDisplay } from "../dashboard/ThinkingDisplay";
 import PresentationEditor from "../editor/presentation-editor";
 import { GlobalUndoRedoHandler } from "./GlobalUndoRedoHandler";
 
@@ -83,6 +84,13 @@ export const PresentationSlidesView = ({
           presentationTitle={currentPresentationTitle}
           showHeader={isPresenting && shouldShowExitHeader}
         />
+
+        <ThinkingDisplay
+          thinking={usePresentationState.getState().presentationThinking}
+          isGenerating={isGeneratingPresentation}
+          title="AI is thinking about your presentation..."
+        />
+
         <PlateController>
           <GlobalUndoRedoHandler />
 
