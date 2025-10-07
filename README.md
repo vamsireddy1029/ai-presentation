@@ -185,8 +185,6 @@ Create personalized themes to match your brand or style:
 
 ## 🧠 Local Models Guide
 
-Run the app with local language models via LM Studio or Ollama.
-
 ### LM Studio
 
 1. Install [LM Studio](https://lmstudio.ai).
