@@ -184,6 +184,7 @@ Create personalized themes to match your brand or style:
 4. Save your theme for future use
 
 ## 🧠 Local Models Guide
+You can use either Ollama or LM Studio for using local models in ALLWEONE presentation ai. 
 
 ### LM Studio
 
