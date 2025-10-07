@@ -1,5 +1,4 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { type LanguageModelV1 } from "ai";
 import { createOllama } from "ollama-ai-provider";
 
@@ -19,9 +18,10 @@ export function modelPicker(
 
   if (modelProvider === "lmstudio" && modelId) {
     // Use LM Studio with OpenAI compatible provider
-    const lmstudio = createOpenAICompatible({
+    const lmstudio = createOpenAI({
       name: "lmstudio",
       baseURL: "http://localhost:1234/v1",
+      apiKey: "lmstudio",
     });
     return lmstudio(modelId) as unknown as LanguageModelV1;
   }

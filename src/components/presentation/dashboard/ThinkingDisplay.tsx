@@ -19,13 +19,9 @@ interface ThinkingDisplayProps {
 
 export function ThinkingDisplay({
   thinking,
-  isGenerating,
+  isGenerating: _isGenerating,
   title = "AI is thinking...",
 }: ThinkingDisplayProps) {
-  if (!thinking && !isGenerating) {
-    return null;
-  }
-
   const extractThinkingContent = (text: string): string => {
     return text
       .replace(/^<think>/, "")
@@ -33,7 +29,13 @@ export function ThinkingDisplay({
       .trim();
   };
 
+  const hasClosingTag = /<\/think>/i.test(thinking);
   const thinkingContent = extractThinkingContent(thinking);
+
+  // Only render when there is actual thinking content, not just loading
+  if (!thinkingContent) {
+    return null;
+  }
   const [open, setOpen] = useState(false);
 
   return (
@@ -47,10 +49,10 @@ export function ThinkingDisplay({
         <Collapsible open={open} onOpenChange={setOpen}>
           <CollapsibleTrigger className="flex w-full items-center justify-between">
             <div className="flex items-center gap-3">
-              {isGenerating ? (
-                <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              ) : (
+              {hasClosingTag ? (
                 <Brain className="h-5 w-5 text-primary" />
+              ) : (
+                <Loader2 className="h-5 w-5 animate-spin text-primary" />
               )}
               <span className="text-sm font-medium text-foreground">
                 {title}
