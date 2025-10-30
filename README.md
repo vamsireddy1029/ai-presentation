@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ALLWEONE® AI Presentation Generator
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -335,3 +336,6 @@ Need help or have questions?
 **Built with ❤️ by the ALLWEONE™ Team**
 
 **[⭐ Star us on GitHub](https://github.com/allweonedev/presentation-ai)**
+=======
+# ai-presentation
+>>>>>>> bfccd50aa93e1f3faaa0ed8540aa16512500e605
