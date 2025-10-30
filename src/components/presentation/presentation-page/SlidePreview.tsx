@@ -123,7 +123,7 @@ function SlidePreviewBase({
                     <div className="flex flex-col space-y-4">
                       {slides.map((slide, index) => (
                         <MemoPreviewItem
-                          key={slide.id}
+                           key={`${slide.id}-${index}`}
                           index={index}
                           isActive={effectiveCurrentSlideIndex === index}
                           onClick={handleSlideClick}

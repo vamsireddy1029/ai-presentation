@@ -18,7 +18,7 @@ An open-source, AI-powered presentation generator inspired by Gamma.app that cre
 - [Discord Community](https://discord.gg/fsMHMhAHRV)
 - [Contributing Guidelines](CONTRIBUTING.md)
 
-## 📋 Table of Contents
+## 📋  Table of Contents
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
@@ -99,11 +99,9 @@ Before you begin, ensure you have the following installed:
    ```
 
 2. **Install dependencies**
-
    ```bash
    pnpm install
    ```
-
 3. **Set up environment variables**
 
    Create a `.env` file in the root directory with the following variables:
@@ -130,10 +128,7 @@ Before you begin, ensure you have the following installed:
    # PostgreSQL Database
    DATABASE_URL="postgresql://username:password@localhost:5432/presentation_ai"
    ```
-
    > 💡 **Tip**: Copy `.env.example` to `.env` and fill in your actual values.
-
-### Database Setup
 
 1. **Initialize the database**
 

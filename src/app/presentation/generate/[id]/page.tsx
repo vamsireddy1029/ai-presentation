@@ -82,12 +82,6 @@ export default function PresentationGenerateWithIdPage() {
   // This effect handles the immediate startup of generation upon first mount
   // only if we're coming fresh from the dashboard (isGeneratingOutline === true)
   useEffect(() => {
-    // Only run once on initial page load
-    if (initialLoadComplete.current) return;
-    initialLoadComplete.current = true;
-
-    // If isGeneratingOutline is true but generation hasn't been started yet,
-    // this indicates we just came from the dashboard and should start generation
     if (isGeneratingOutline && !generationStarted.current) {
       console.log("Starting outline generation after navigation");
       generationStarted.current = true;
