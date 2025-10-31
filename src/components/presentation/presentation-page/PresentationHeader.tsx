@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 // Import our new components
-import AllweoneText from "@/components/globals/allweone-logo";
+import VamsiText from "@/components/globals/vamsi-logo";
 import { Button } from "@/components/ui/button";
 import * as motion from "framer-motion/client";
 import { ExportButton } from "./buttons/ExportButton";
@@ -48,11 +48,7 @@ export default function PresentationHeader({ title }: PresentationHeaderProps) {
         <div className="flex items-center gap-2">
           {/* This component is suppose to be logo but for now its is actually hamburger menu */}
 
-          <Link href={"/presentation/create"}>
-            <Button size={"icon"} className="rounded-full" variant={"ghost"}>
-              <Brain></Brain>
-            </Button>
-          </Link>
+         
 
           <motion.div
             initial={false}
@@ -60,7 +56,7 @@ export default function PresentationHeader({ title }: PresentationHeaderProps) {
             transition={{ duration: 1 }}
           >
             <Link href="/" className="h-max">
-              <AllweoneText className="h-10 w-[7.5rem] cursor-pointer transition-transform duration-100 active:scale-95"></AllweoneText>
+              <VamsiText className="h-10 w-[7.5rem] cursor-pointer transition-transform duration-100 active:scale-95"></VamsiText>
             </Link>
           </motion.div>
         </div>
@@ -73,12 +69,7 @@ export default function PresentationHeader({ title }: PresentationHeaderProps) {
     <header className="flex h-12 w-full items-center justify-between border-b border-accent bg-background px-4">
       {/* Left section with breadcrumb navigation */}
       <div className="flex items-center gap-2">
-        <Link
-          href="/presentations"
-          className="text-muted-foreground hover:text-foreground"
-        >
-          <Brain className="h-5 w-5"></Brain>
-        </Link>
+         
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
         <span className="font-medium">{presentationTitle}</span>
       </div>

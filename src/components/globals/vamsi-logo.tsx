@@ -5,7 +5,7 @@ const AmericanTypewritter = LocalFont({
   src: "../../fonts/American_Typewriter.woff",
 });
 
-export default function AllweoneText(
+export default function VamsiText(
   props: React.ButtonHTMLAttributes<HTMLDivElement> & { className?: string },
 ) {
   return (
@@ -20,7 +20,7 @@ export default function AllweoneText(
           )}
           fontSize="11.5"
         >
-          ALLWEONE
+          Vamsi
         </text>
       </svg>
     </div>
