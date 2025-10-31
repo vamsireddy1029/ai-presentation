@@ -22,12 +22,13 @@ import { ArrowLeft, Wand2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
-export const PRESENTATION_GENERATION_COOKIE = "presentation_generation_pending";
-
 export default function PresentationGenerateWithIdPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+
+  const PRESENTATION_GENERATION_COOKIE = "presentation_generation";
+
   const {
     setCurrentPresentation,
     setPresentationInput,
@@ -45,24 +46,20 @@ export default function PresentationGenerateWithIdPage() {
     setWebSearchEnabled,
   } = usePresentationState();
 
-  // Track if this is a fresh navigation or a revisit
   const initialLoadComplete = useRef(false);
   const generationStarted = useRef(false);
 
-  // Use React Query to fetch presentation data
-  const { data: presentationData, isLoading: isLoadingPresentation } = useQuery(
-    {
-      queryKey: ["presentation", id],
-      queryFn: async () => {
-        const result = await getPresentation(id);
-        if (!result.success) {
-          throw new Error(result.message ?? "Failed to load presentation");
-        }
-        return result.presentation;
-      },
-      enabled: !!id,
+  const { data: presentationData, isLoading: isLoadingPresentation } = useQuery({
+    queryKey: ["presentation", id],
+    queryFn: async () => {
+      const result = await getPresentation(id);
+      if (!result.success) {
+        throw new Error(result.message ?? "Failed to load presentation");
+      }
+      return result.presentation;
     },
-  );
+    enabled: !!id,
+  });
 
   // Function to clear the cookie
   const clearPresentationCookie = () => {
@@ -71,23 +68,20 @@ export default function PresentationGenerateWithIdPage() {
     const domain =
       window.location.hostname === "localhost" ? "localhost" : ".vamsi.com";
 
-    document.cookie = `${PRESENTATION_GENERATION_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; ${domain !== "localhost" ? `domain=${domain}; ` : ""}`;
+    document.cookie = `${PRESENTATION_GENERATION_COOKIE}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; ${
+      domain !== "localhost" ? `domain=${domain}; ` : ""
+    }`;
   };
 
-  // Clear the cookie when the page loads
   useEffect(() => {
     clearPresentationCookie();
   }, []);
 
-  // This effect handles the immediate startup of generation upon first mount
-  // only if we're coming fresh from the dashboard (isGeneratingOutline === true)
+  // Start outline generation automatically if required
   useEffect(() => {
     if (isGeneratingOutline && !generationStarted.current) {
       console.log("Starting outline generation after navigation");
       generationStarted.current = true;
-
-      // Give the component time to fully mount and establish connections
-      // before starting the generation process
       setTimeout(() => {
         setShouldStartOutlineGeneration(true);
       }, 100);
@@ -114,6 +108,7 @@ export default function PresentationGenerateWithIdPage() {
           )
             ? presentationData.presentation.searchResults
             : JSON.parse(presentationData.presentation.searchResults as string);
+
           setWebSearchEnabled(true);
           setSearchResults(searchResults);
         } catch (error) {
@@ -126,34 +121,28 @@ export default function PresentationGenerateWithIdPage() {
       if (presentationData?.presentation?.theme) {
         const themeId = presentationData.presentation.theme;
 
-        // Check if this is a predefined theme
         if (themeId in themes) {
-          // Use predefined theme
           setTheme(themeId as Themes);
         } else {
-          // If not in predefined themes, treat as custom theme
           void getCustomThemeById(themeId)
             .then((result) => {
               if (result.success && result.theme) {
-                // Set the theme with the custom theme data
                 const themeData = result.theme
                   .themeData as unknown as ThemeProperties;
                 setTheme(themeId, themeData);
               } else {
-                // Fallback to default theme if custom theme not found
                 console.warn("Custom theme not found:", themeId);
                 setTheme("mystique");
               }
             })
             .catch((error) => {
               console.error("Failed to load custom theme:", error);
-              // Fallback to default theme on error
               setTheme("mystique");
             });
         }
       }
 
-      // Set presentationStyle if available
+      // Set presentationStyle, imageSource, and language
       if (presentationData?.presentation?.presentationStyle) {
         setPresentationStyle(presentationData.presentation.presentationStyle);
       }
@@ -164,7 +153,6 @@ export default function PresentationGenerateWithIdPage() {
         );
       }
 
-      // Set language if available
       if (presentationData.presentation?.language) {
         setLanguage(presentationData.presentation.language);
       }
@@ -172,6 +160,7 @@ export default function PresentationGenerateWithIdPage() {
   }, [
     presentationData,
     isLoadingPresentation,
+    isGeneratingOutline,
     setCurrentPresentation,
     setPresentationInput,
     setOutline,
@@ -201,6 +190,7 @@ export default function PresentationGenerateWithIdPage() {
       </ThemeBackground>
     );
   }
+
   return (
     <ThemeBackground>
       <Button
@@ -213,8 +203,6 @@ export default function PresentationGenerateWithIdPage() {
       </Button>
 
       <div className="flex flex-row justify-center">
-        {/* <GoogleAdsBanner isVertical={true} /> */}
-
         <div className="max-w-4xl space-y-8 p-8 pt-6">
           <div className="space-y-8">
             <Header />
@@ -233,8 +221,6 @@ export default function PresentationGenerateWithIdPage() {
             </div>
           </div>
         </div>
-
-        {/* <GoogleAdsBanner isVertical={true} /> */}
       </div>
 
       <div className="absolute bottom-0 left-0 right-0 flex justify-center border-t bg-background/80 p-4 backdrop-blur-sm">
