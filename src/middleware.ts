@@ -1,22 +1,23 @@
-import { auth } from "@/server/auth";
 import { NextResponse, type NextRequest } from "next/server";
 
-export async function middleware(request: NextRequest) {
-  const session = await auth();
+export function middleware(request: NextRequest) {
   const isAuthPage = request.nextUrl.pathname.startsWith("/auth");
+  const token =
+    request.cookies.get("next-auth.session-token") ||
+    request.cookies.get("__Secure-next-auth.session-token");
 
-  // Always redirect from root to /presentation
+  // Redirect root -> /presentation
   if (request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/presentation", request.url));
   }
 
-  // If user is on auth page but already signed in, redirect to home page
-  if (isAuthPage && session) {
+  // If user is logged in and visits auth page
+  if (isAuthPage && token) {
     return NextResponse.redirect(new URL("/presentation", request.url));
   }
 
-  // If user is not authenticated and trying to access a protected route, redirect to sign-in
-  if (!session && !isAuthPage && !request.nextUrl.pathname.startsWith("/api")) {
+  // If user is not logged in and tries to access protected route
+  if (!token && !isAuthPage && !request.nextUrl.pathname.startsWith("/api")) {
     return NextResponse.redirect(
       new URL(
         `/auth/signin?callbackUrl=${encodeURIComponent(request.url)}`,
@@ -28,7 +29,6 @@ export async function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Add routes that should be protected by authentication
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
